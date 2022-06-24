@@ -2,14 +2,15 @@
  * A component that binds to the DOM, and shows the Vision logo, with a title:
  * Vision DAO.
  */
-export default (): Node | null => {
-	const node = document.querySelector("#logosquare");
+export default (parent: Node = document.body): Node => {
+	const container = parent.appendChild(document.createElement("div"));
 
-	if (node === null)
-		return null;
+	const img = container.appendChild(document.createElement("img"));
+	img.setAttribute("width", "30vw");
+	img.setAttribute("src", "assets/Vision_Eye_Black.png");
+	img.setAttribute("alt", "The Vision Logo");
+	img.style.width = "30vw";
+	img.style.filter = "invert(1)";
 
-	const instance = node.children[0].cloneNode(true);
-	document.appendChild(instance);
-
-	return instance;
+	return container;
 };

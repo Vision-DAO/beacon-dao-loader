@@ -1,0 +1,110 @@
+@import "./fonts.css";
+
+/* Color palette courtesy of Jenna and Hat */
+:root {
+	--main-bg-color-rgb: 91, 42, 134;
+	--main-bg-color: rgb(91, 42, 134);
+	--secondary-bg-color-rgb: 54, 5, 104;
+	--secondary-bg-color: rgb(54, 5, 104);
+	--main-bg-lightened-rgb: 130, 65, 186;
+	--main-bg-lightened: rgb(130, 65, 186);
+
+	--select-rgb: 119, 133, 172;
+	--select: rgb(119, 133, 172);
+
+	--hover-rgb: 154, 198, 197;
+	--hover: rgb(154, 198, 197);
+	--active-rgb: 165, 230, 186;
+	--active: rgb(165, 230, 186);
+
+	--warning-rgb: 245, 247, 73;
+	--warning: rgb(245, 247, 73);
+
+	--primary-rgb: 255, 255, 255;
+	--primary: rgb(255, 255, 255);
+}
+
+html, body {
+	width: 100vw;
+	height: 100vh;
+
+	margin: 0;
+
+	font-family: "Roboto", Helvetica, sans-serif;
+	color: var(--primary);
+}
+
+.app {
+	width: 100vw;
+	height: 100vh;
+
+	background-color: var(--main-bg-color);
+	background: linear-gradient(180deg, var(--main-bg-lightened) 0%, var(--main-bg-color) 100%);
+	padding: 2rem;
+
+	box-sizing: border-box;
+}
+
+.loginContainer {
+	display: flex;
+
+	flex-flow: column nowrap;
+
+	justify-content: center;
+	align-items: center;
+
+	height: 100%;
+	width: 100%;
+}
+
+.loginContainer>div {
+	max-width: 50%;
+}
+
+.button {
+	background-color: rgb(var(--passive-color));
+
+	cursor: pointer;
+	font-weight: bold;
+	padding: 1rem;
+	text-decoration: none;
+	outline: none;
+	border: none;
+	transition: 0.3s;
+	border-radius: 5px;
+	text-transform: uppercase;
+	font-size: 1rem;
+}
+
+.button:hover {
+	background-color: rgb(var(--hover-color));
+}
+
+/**
+ * Used by the loading animation. Too lazy to inline in JS.
+ */
+@-moz-keyframes bounce {
+	0%, 15% {
+		-moz-transform: translate(0,0);
+	}
+
+	50% {
+		-moz-transform: translate(0,-0.5em);
+	}
+
+	85%, 100% {
+		-moz-transform: translate(0,0);
+	};
+}
+
+@-webkit-keyframes bounce {
+	0%, 20% {
+		-webkit-transform: translate(0,0);
+	}
+	50% {
+		-webkit-transform: translate(0,-0.5em);
+	}
+	80%, 100% {
+		-webkit-transform: translate(0,0);
+	};
+}
