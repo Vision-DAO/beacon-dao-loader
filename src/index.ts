@@ -1,20 +1,10 @@
 import { create } from "ipfs-core";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 
-import { DEPLOYED_CONTRACTS } from "./conf";
-import { addAndChangeNetwork, login } from "./utils/eth";
-
-import LogoSquare from "./LogoSquare";
-import { ActionableDialogue, DialogueStyle, DialogueComponent } from "./ActionableDialogue";
+import { LoginPage } from "./pages/login";
+import { DashboardPage } from "./pages/dash";
 
 import "./styles/index.css";
-
-const ERR_NO_TEMPLATES = "Client does not support HTML templates.";
-
-/**
- * Users are redirected here when they have no active extension.
- */
-const METAMASK_SITE = "https://metamask.io/";
 
 /**
  * Satisfy typescript wanting typings for the window.ethereum instance.
@@ -27,144 +17,29 @@ declare global {
 
 (async () => {
 	// Use one global IPFS instance. Load it in later if it hasn't loaded yet
-	const ipfs = create();
+	const gIpfs = create();
 
 	// Use one global address for the user's logged in account
-	let account = null;
-	const app = document.querySelector(".app");
+	const app = document.querySelector(".app") as HTMLElement;
+	app.style.transition = "0.3s";
 
 	if (app === null)
 		return;
 
-	const loginContainer = app.appendChild(document.createElement("div"));
-	loginContainer.classList.add("loginContainer");
+	// The user will continuously log in and log out for all of eternity
+	for(;;) {
+		// Run the user through a flow to get their active account information, and
+		// get their consent. Leave them on a screen if they get stuck in the flow
+		// This screen should be descriptive enough and give the user continuity
+		// anyway through navigation items on it
+		const res = await LoginPage(app, gIpfs);
 
-	// Show branding info
-	const logoSquare = LogoSquare(loginContainer);
+		if (res === null)
+			return null;
 
-	if (logoSquare === null) {
-		console.warn(ERR_NO_TEMPLATES);
+		const { account, ipfs } = res;
 
-		return;
+		// Wait until the user logs out, then start the log in process again
+		await DashboardPage(app, ipfs, account);
 	}
-
-	// Check for a present Ethereum provider. Present a prompt if it isn't available.
-	if (window.ethereum === undefined) {
-		ActionableDialogue(loginContainer,
-			{
-				title: "No Ethereum Connection",
-				msg: "Please install an Ethereum wallet. Most users use Metamask.",
-				onClick: () => window.location.assign(METAMASK_SITE),
-				btnText: "Install Metamask",
-				style: DialogueStyle.Warning
-			}
-		);
-
-		// No further action required until ethereum is available
-		return;
-	}
-
-	// Make sure we can actually use the blockchain. Otherwise require reload
-	if (!window.ethereum.isConnected()) {
-		ActionableDialogue(loginContainer,
-			{
-				title: "Unable to Communicate with Blockchain",
-				msg: "Your wallet was unable to form a connection with a blockchain. Please try again later.",
-				onClick: () => window.location.reload(),
-				btnText: "Reload",
-				style: DialogueStyle.Warning
-			}
-		);
-
-		return;
-	}
-
-	let loginButton: DialogueComponent | null = null;
-
-	// Check that the user has granted us access to ONE of their accounts.
-	// Handle switching to another account later
-	while (account === null) {
-		if (loginButton !== null) {
-			document.body.removeChild(loginButton["node"]);
-		}
-
-		// Request access to the user's account through a login button
-		await new Promise<void>((resolve) => {
-			loginButton = ActionableDialogue(loginContainer,
-				{
-					title: "Login with Metamask",
-					msg: "We need to know who you are to proceed. Continue in your wallet.",
-					titleIconSrc: "assets/icons/workbadge.svg",
-					btnIconSrc: "assets/icons/MetaMask_Fox.svg.png",
-					btnText: "Sign In",
-					onClick: async () => {
-						if (loginButton)
-							loginButton.setLoading(true);
-
-						const accounts = await login(window.ethereum);
-
-						if (accounts.length != 0)
-							account = accounts[0];
-
-						resolve();
-
-						if (loginButton)
-							loginButton.setLoading(false);
-					},
-					style: DialogueStyle.Labeled,
-				});
-		});
-	}
-
-	if (loginButton)
-		loginContainer.removeChild(loginButton["node"]);
-
-	// Listen for future updates to the active account by just reloading the page
-	window.ethereum.on("accountsChanged", () => {
-		window.location.reload();
-	});
-
-	let networkPrompt: DialogueComponent | null = null;
-
-	// Creates a new promise that waits for the next time the client switches
-	// Ethereum chains
-	const netSwitched: () => Promise<void> = () => new Promise<void>((resolve) => {
-		window.ethereum.once("chainChanged", () => resolve());
-	});
-
-	// Check that the user is on a supported blockchain. If not, allow them to
-	// switch
-	while (window.ethereum.chainId == null || !(Number(window.ethereum.chainId).toString(10) in DEPLOYED_CONTRACTS)) {
-		if (networkPrompt === null) {
-			// Allow the user to click a button to change their network, and register
-			// an event listener for when that happens to refresh the page.
-			networkPrompt = ActionableDialogue(loginContainer,
-				{
-					title: "Unsupported Network",
-					msg: "Vision isn't supported for your selected blockchain yet. Connect to Polygon, one of our supported networks, to continue.",
-					btnText: "Connect to Polygon",
-					onClick: async () => {
-						if (networkPrompt)
-							networkPrompt.setLoading(true);
-
-						await addAndChangeNetwork(window.ethereum);
-					},
-					style: DialogueStyle.Warning,
-				}
-			);
-		}
-
-		await netSwitched();
-		networkPrompt.setLoading(false);
-	}
-
-	// The user has escaped from the infinite account switcher
-	if (networkPrompt)
-		loginContainer.removeChild(networkPrompt.node);
-
-	// Require a restart if they change again
-	window.ethereum.on("chainChanged", () => window.location.reload());
-
-	// Done with logging in
-	app.removeChild(loginContainer);
 })();

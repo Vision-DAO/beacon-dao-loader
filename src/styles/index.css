@@ -6,6 +6,8 @@
 	--main-bg-color: rgb(91, 42, 134);
 	--secondary-bg-color-rgb: 54, 5, 104;
 	--secondary-bg-color: rgb(54, 5, 104);
+	--secondary-bg-color-darker-rgb: 45, 4, 87;
+	--secondary-bg-color-darker: rgb(45, 4, 87);
 	--main-bg-lightened-rgb: 130, 65, 186;
 	--main-bg-lightened: rgb(130, 65, 186);
 
@@ -38,11 +40,32 @@ html, body {
 	width: 100vw;
 	height: 100vh;
 
+	position: relative;
+
 	background-color: var(--main-bg-color);
 	background: linear-gradient(180deg, var(--main-bg-lightened) 0%, var(--main-bg-color) 100%);
 	padding: 2rem;
 
 	box-sizing: border-box;
+	z-index: 1;
+}
+
+.app::before {
+	position: absolute;
+	content: "";
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: linear-gradient(180deg,
+		var(--secondary-bg-color) 0%, var(--secondary-bg-color-darker) 100%);
+	z-index: -1;
+	transition: opacity 0.1s linear;
+	opacity: 0;
+}
+
+.app.active::before {
+	opacity: 1;
 }
 
 .loginContainer {
