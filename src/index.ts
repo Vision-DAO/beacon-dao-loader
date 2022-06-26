@@ -1,10 +1,16 @@
 import { create } from "ipfs-core";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 
+import { IPFSClient } from "./utils/ipfs";
 import { LoginPage } from "./pages/login";
 import { DashboardPage } from "./pages/dash";
 
 import "./styles/index.css";
+
+/**
+ * Used for testing with one single IPFS node per-run.
+ */
+declare const __IPFS_NODE__: undefined | string;
 
 /**
  * Satisfy typescript wanting typings for the window.ethereum instance.
@@ -17,7 +23,18 @@ declare global {
 
 (async () => {
 	// Use one global IPFS instance. Load it in later if it hasn't loaded yet
-	const gIpfs = create();
+	let gIpfs: Promise<IPFSClient>;
+
+	// Load an alternative HTTP-based client in testing environments only
+	if (__IPFS_NODE__) {
+		const { create } = await import("ipfs-http-client");
+
+		gIpfs = new Promise<IPFSClient>(
+			(resolve) => resolve(create({ url: __IPFS_NODE__ }) as unknown as IPFSClient)
+		);
+	} else {
+		gIpfs = create();
+	}
 
 	// Use one global address for the user's logged in account
 	const app = document.querySelector(".app") as HTMLElement;

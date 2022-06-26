@@ -1,3 +1,5 @@
+import { Clickable } from "./Clickable";
+
 /**
  * See button docs.
  */
@@ -68,8 +70,7 @@ export const Button = (parent: Element = document.body, { label, iconSrc, onClic
 	};
 
 	if (onClick) {
-		container.addEventListener("click", onClick);
-		container.addEventListener("touchend", onClick);
+		Clickable(container, onClick);
 	}
 
 	let loadingIcon: HTMLElement | null = null;

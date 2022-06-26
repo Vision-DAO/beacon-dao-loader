@@ -44,7 +44,7 @@ export const ActionableDialogue = (parent: Element = document.body, { title, tit
 
 	const headerImage = headerContainer.appendChild(document.createElement("img"));
 	headerImage.style.filter = "invert(1)";
-	headerImage.style.marginRight = "0.5rem";
+	headerImage.style.marginRight = "1rem";
 	headerImage.style.height = "2.5em";
 
 	const header = headerContainer.appendChild(document.createElement("h1"));

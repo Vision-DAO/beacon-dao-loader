@@ -69,7 +69,13 @@ const dev = {
 
 	plugins: [
 		// Only update what has changed on hot reload
-		new webpack.HotModuleReplacementPlugin()
+		new webpack.HotModuleReplacementPlugin(),
+
+		// #define for JS. Used for aliasing IPFS to a global server that only
+		// starts once, but using a browser-based one in production
+		new webpack.DefinePlugin({
+			__IPFS_NODE__: JSON.stringify("http://localhost:5002"),
+		}),
 	]
 };
 

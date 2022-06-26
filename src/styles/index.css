@@ -44,7 +44,7 @@ html, body {
 
 	background-color: var(--main-bg-color);
 	background: linear-gradient(180deg, var(--main-bg-lightened) 0%, var(--main-bg-color) 100%);
-	padding: 2rem;
+	padding: 4rem;
 
 	box-sizing: border-box;
 	z-index: 1;
@@ -101,6 +101,20 @@ html, body {
 
 .button:hover {
 	background-color: rgb(var(--hover-color));
+}
+
+.button.secondary {
+	background-color: var(--main-bg-color);
+	color: #FFFFFF;
+}
+
+.button.secondary.active {
+	background-color: var(--active);
+	color: var(--main-bg-color);
+}
+
+.hoverable:hover {
+	opacity: 80%;
 }
 
 /**

@@ -1,5 +1,17 @@
 import { MetaMaskInpageProvider } from "@metamask/providers";
-import { DEFAULT_NETWORK } from "../conf";
+import { DEFAULT_NETWORK, EXPLORER_URLS } from "./conf";
+
+/**
+ * Opens the etherscan page for an address.
+ */
+export const openAddress = (eth: MetaMaskInpageProvider, address: string) => {
+	const net = eth.chainId && parseInt(eth.chainId);
+
+	if (!net || !(net in EXPLORER_URLS))
+		return;
+
+	window.open(`${EXPLORER_URLS[net]}/address/${address}`, "_blank");
+};
 
 /**
  * Connects the user to the polygon mumbai testnet.
