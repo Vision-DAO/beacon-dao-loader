@@ -1,9 +1,12 @@
 import blockies from "blockies";
 import { Clickable } from "../basic/Clickable";
+import { Modal } from "./Modal";
 import { openAddress } from "../../utils/eth";
+import { APP_VERSION, IPFS_VERSION, NETWORK_NAMES } from "../../utils/conf";
 
 export interface Page {
 	cb: () => void,
+	onClose: () => void,
 	iconSrc: string,
 }
 
@@ -98,10 +101,45 @@ const InfoSection = (parent: HTMLElement, { account, onLogout }: { account: stri
 	infoButtonsContainer.style.justifyContent = "flex-end";
 	infoButtonsContainer.style.marginTop = "0.5em";
 
+	// Items to list on the modal
+	const modalDetails = document.createElement("div");
+	modalDetails.style.display = "flex";
+	modalDetails.style.flexFlow = "column nowrap";
+	modalDetails.style.marginTop = "1rem";
+
+	const modalItem = (parent: Node, a: string, b: string) => {
+		const container = parent.appendChild(document.createElement("div"));
+		container.style.display = "flex";
+		container.style.flexFlow = "row nowrap";
+		container.style.justifyContent = "space-between";
+		container.style.alignItems = "center";
+		container.style.opacity = "70%";
+		container.style.marginTop = "0.5rem";
+
+		const left = container.appendChild(document.createElement("p"));
+		left.textContent = a;
+		left.style.margin = "0";
+
+		const right = container.appendChild(document.createElement("p"));
+		right.textContent = b;
+		right.style.fontWeight = "bold";
+		right.style.margin = "0";
+	};
+
+	[
+		["App Version", APP_VERSION],
+		["IPFS Version", IPFS_VERSION],
+		[
+			"ETH Network",
+			window.ethereum.chainId ?
+				NETWORK_NAMES[parseInt(window.ethereum.chainId, 16)] : "Not Connected"
+		]
+	].forEach(([a, b]) => modalItem(modalDetails, a, b));
+
 	const info = Clickable(
 		infoButtonsContainer.appendChild(
 			document.createElement("img")),
-		() => alert("TODO"), true);
+		() => Modal(document.body, { title: "About", children: modalDetails }), true);
 	info.src = "assets/icons/info.svg";
 
 	const logout = Clickable(
@@ -132,6 +170,7 @@ const InfoSection = (parent: HTMLElement, { account, onLogout }: { account: stri
 		pic = createBlockie();
 	};
 
+	setTimeout(resizeBlockie, 20);
 	window.addEventListener("resize", resizeBlockie);
 
 	return container;
@@ -221,6 +260,9 @@ export const NavSection = (parent: HTMLElement, { pages }: { pages: { [ name: st
 				altIcon.style.opacity = "100%";
 				label.style.fontWeight = "bold";
 			} else {
+				if (pageButton.classList.contains("active"))
+					pageContents.onClose();
+
 				pageButton.classList.remove("active");
 				icon.style.opacity = "100%";
 				altIcon.style.opacity = "0%";

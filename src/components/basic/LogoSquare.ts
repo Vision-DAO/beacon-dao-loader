@@ -9,7 +9,7 @@ export default (parent: Node = document.body): Node => {
 	img.setAttribute("width", "30vw");
 	img.setAttribute("src", "assets/Vision_Eye_Black.png");
 	img.setAttribute("alt", "The Vision Logo");
-	img.style.width = "30vw";
+	img.style.width = "20vw";
 	img.style.filter = "invert(1)";
 
 	return container;

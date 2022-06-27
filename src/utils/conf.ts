@@ -1,6 +1,22 @@
 // This file contains hard-coded defaults that depend on previous build steps
 
 /**
+ * Version variables derived from package.json
+ */
+declare const __IPFS_VERSION__: string;
+declare const __APP_VERSION__: string;
+
+export const IPFS_VERSION = __IPFS_VERSION__;
+export const APP_VERSION = __APP_VERSION__;
+
+/**
+ * Human-readable equivalents for supported networks.
+ */
+export const NETWORK_NAMES: { [chainId: number]: string } = {
+	80001: "Mumbai",
+};
+
+/**
  * Explorer URLs for each supported blockchain.
  */
 export const EXPLORER_URLS: { [chainId: number]: string } = {

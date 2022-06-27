@@ -6,6 +6,8 @@ import CopyWebpackPlugin from "copy-webpack-plugin";
 import NodePolyfillPlugin from "node-polyfill-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 
+import pkg from "./package.json";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
@@ -118,6 +120,12 @@ const common = {
 			template: paths.public + "/index.html", // template file
 			filename: "index.html", // output file,
 			minify: false
+		}),
+
+		new webpack.DefinePlugin({
+			__RELEASE_DATE__: JSON.stringify(new Date()),
+			__APP_VERSION__: JSON.stringify(pkg.version.replaceAll("^", "")),
+			__IPFS_VERSION__: JSON.stringify(pkg.dependencies.ipfs.replaceAll("^", "")),
 		})
 	],
 

@@ -1,14 +1,23 @@
-import { NavBar, NavBarProps } from "./NavBar";
+import { NavBar } from "./NavBar";
+import { Page } from "./NavBar";
+import { Component } from "../basic/Component";
+
+export interface MountablePage {
+	component: Component,
+	iconSrc: string,
+}
 
 export interface ScaffoldProps {
-	navProps: NavBarProps
+	account: string,
+	pages: { [pageName: string]: MountablePage },
+	onLogout: () => void,
 }
 
 /**
  * A component that renders workspace with an adjacent panel, where the
  * adjacent panel is a navigation bar.
  */
-export const Scaffold = (parent: HTMLElement, { navProps }: ScaffoldProps): HTMLElement => {
+export const Scaffold = (parent: HTMLElement, { pages, ...args }: ScaffoldProps): HTMLElement => {
 	const workspaceContainer = parent.appendChild(document.createElement("div"));
 	workspaceContainer.style.display = "flex";
 	workspaceContainer.style.flexFlow = "row nowrap";
@@ -17,7 +26,37 @@ export const Scaffold = (parent: HTMLElement, { navProps }: ScaffoldProps): HTML
 	workspaceContainer.style.width = "100%";
 	workspaceContainer.style.height = "100%";
 
-	const nav = NavBar(workspaceContainer, navProps);
+	const contentAreaContainer = workspaceContainer.appendChild(document.createElement("div"));
+	contentAreaContainer.style.width = "100%";
+	contentAreaContainer.style.height = "100%";
+	contentAreaContainer.style.position = "relative";
+
+	const mountedPages: { [page: string]: Page } = Object.entries(pages).map(([name, { iconSrc, component }]): [string, Page] => {
+		let mounted: HTMLElement | null = null;
+
+		return [name, {
+			cb: () => {
+				if (mounted === null) {
+					mounted = component(workspaceContainer);
+					mounted.style.position = "absolute";
+					mounted.style.top = "0";
+					mounted.style.left = "0";
+					mounted.style.transition = "opacity 0.3s";
+
+					return;
+				}
+
+				mounted.style.opacity = "100%";
+			},
+			onClose: () => {
+				if (mounted)
+					mounted.style.opacity = "0%";
+			},
+			iconSrc,
+		}];
+	}).reduce((dict, [name, constructed]) => { return { ...dict, [name]: constructed }; }, {});
+
+	const nav = NavBar(workspaceContainer, { pages: mountedPages, ...args });
 	nav.style.width = "15%";
 
 	return workspaceContainer;
