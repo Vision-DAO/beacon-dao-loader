@@ -15,6 +15,7 @@
 	"dependencies": {
 		"@libp2p/logger": "^2.0.0",
 		"@metamask/providers": "^9.0.0",
+		"beacon-dao": "git@github.com:Vision-DAO/value-tree.git#dev",
 		"blockies": "^0.0.2",
 		"ipfs": "^0.63.4",
 		"ipfs-message-port-client": "^0.12.4",
@@ -29,7 +30,6 @@
 		"@typescript-eslint/eslint-plugin": "^5.29.0",
 		"@typescript-eslint/parser": "^5.29.0",
 		"babel-loader": "^8.2.5",
-		"beacon-dao": "git+ssh://git@github.com:vision-dao/value-tree.git#dev",
 		"copy-webpack-plugin": "^11.0.0",
 		"css-loader": "^6.7.1",
 		"eslint": "^8.18.0",
