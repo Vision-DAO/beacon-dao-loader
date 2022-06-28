@@ -1,7 +1,7 @@
 import { DEPLOYED_CONTRACTS } from "../utils/conf";
 import { METAMASK_SITE, ERR_NO_TEMPLATES } from "../utils/common";
 import { addAndChangeNetwork, login } from "../utils/eth";
-import { IPFSClient } from "../utils/ipfs";
+import { IPFSClient } from "ipfs-message-port-client";
 
 import LogoSquare from "../components/basic/LogoSquare";
 import { ActionableDialogue, DialogueStyle, DialogueComponent } from "../components/basic/ActionableDialogue";
