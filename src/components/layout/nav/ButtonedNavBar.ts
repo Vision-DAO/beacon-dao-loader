@@ -1,5 +1,5 @@
 import { Clickable } from "../../basic/Clickable";
-import { NavBar, Page } from "./NavBar";
+import { NavBar, Page, NavBarContext } from "./NavBar";
 
 /**
  * Displays a Vision logo, followed by buttons to each of the navigablePages.
@@ -24,67 +24,67 @@ export const BrandedButtonNavBar: NavBar = (parent: HTMLElement, pages: { [ name
 	pagesContainer.style.alignItems = "stretch";
 	pagesContainer.style.marginTop = "2em";
 
-	// Allow each button to receive an event informing them that the active page
-	// has changed, which updates their state accordingly
-	const changePageListeners: ((page: string) => void)[] = [];
+	NavBarContext((switchTo) => {
+		for (const [pageName, pageContents] of Object.entries(pages)) {
+			const pageButton = pagesContainer.appendChild(document.createElement("div"));
+			pageButton.classList.add("button");
+			pageButton.classList.add("secondary");
+			pageButton.style.position = "relative";
+			pageButton.style.display = "flex";
+			pageButton.style.flexFlow = "row nowrap";
+			pageButton.style.justifyContent = "flex-start";
+			pageButton.style.alignItems = "center";
+			pageButton.style.marginBottom = "0.75em";
+			pageButton.style.paddingLeft = "1.5em";
+			pageButton.style.paddingRight = "1.5em";
+			pageButton.style.paddingTop = "1em";
+			pageButton.style.paddingBottom = "1em";
 
-	// Informs all page buttons that the page has changed
-	const emitPageChange = (page: string) => {
-		changePageListeners.forEach((fn) => fn(page));
-	};
+			const iconSwitcher = pageButton.appendChild(document.createElement("div"));
+			iconSwitcher.style.width = "2.5em";
+			iconSwitcher.style.position = "relative";
 
-	for (const [pageName, pageContents] of Object.entries(pages)) {
-		const pageButton = Clickable(pagesContainer.appendChild(document.createElement("div")), () => { emitPageChange(pageName); pageContents.cb(); }, true);
-		pageButton.classList.add("button");
-		pageButton.classList.add("secondary");
-		pageButton.style.position = "relative";
-		pageButton.style.display = "flex";
-		pageButton.style.flexFlow = "row nowrap";
-		pageButton.style.justifyContent = "flex-start";
-		pageButton.style.alignItems = "center";
-		pageButton.style.marginBottom = "0.75em";
-		pageButton.style.paddingLeft = "1.5em";
-		pageButton.style.paddingRight = "1.5em";
-		pageButton.style.paddingTop = "1em";
-		pageButton.style.paddingBottom = "1em";
+			const icon = iconSwitcher.appendChild(document.createElement("img"));
+			icon.src = pageContents.iconSrc;
+			icon.style.filter = "invert(1)";
+			icon.style.height = "2.5em";
+			icon.style.position = "relative";
+			icon.style.top = "0";
+			icon.style.left = "0";
 
-		const iconSwitcher = pageButton.appendChild(document.createElement("div"));
-		iconSwitcher.style.width = "2.5em";
-		iconSwitcher.style.position = "relative";
+			const altIcon = iconSwitcher.appendChild(document.createElement("img"));
+			altIcon.style.position = "absolute";
+			altIcon.style.left = "0";
+			altIcon.style.top = "0";
+			altIcon.style.bottom = "0";
+			altIcon.style.opacity = "0%";
+			altIcon.style.filter = "invert(8%) sepia(60%) saturate(4336%) hue-rotate(264deg) brightness(108%) contrast(113%)";
+			altIcon.style.height = "2.5em";
+			altIcon.src = pageContents.iconSrc;
 
-		const icon = iconSwitcher.appendChild(document.createElement("img"));
-		icon.src = pageContents.iconSrc;
-		icon.style.filter = "invert(1)";
-		icon.style.height = "2.5em";
-		icon.style.position = "relative";
-		icon.style.top = "0";
-		icon.style.left = "0";
+			const label = pageButton.appendChild(document.createElement("p"));
+			label.textContent = pageName;
+			label.style.textTransform = "none";
+			label.style.fontWeight = "normal";
+			label.style.margin = "0";
+			label.style.marginLeft = "1em";
+			label.style.fontSize = "1.25em";
 
-		const altIcon = iconSwitcher.appendChild(document.createElement("img"));
-		altIcon.style.position = "absolute";
-		altIcon.style.left = "0";
-		altIcon.style.top = "0";
-		altIcon.style.bottom = "0";
-		altIcon.style.opacity = "0%";
-		altIcon.style.filter = "invert(8%) sepia(60%) saturate(4336%) hue-rotate(264deg) brightness(108%) contrast(113%)";
-		altIcon.style.height = "2.5em";
-		altIcon.src = pageContents.iconSrc;
+			const onActivate = () => {
+				// Deactivate other buttons
+				switcher();
 
-		const label = pageButton.appendChild(document.createElement("p"));
-		label.textContent = pageName;
-		label.style.textTransform = "none";
-		label.style.fontWeight = "normal";
-		label.style.margin = "0";
-		label.style.marginLeft = "1em";
-		label.style.fontSize = "1.25em";
-
-		changePageListeners.push((page: string) => {
-			if (page === pageName) {
+				// Activate the current button
 				pageButton.classList.add("active");
 				icon.style.opacity = "0%";
 				altIcon.style.opacity = "100%";
 				label.style.fontWeight = "bold";
-			} else {
+
+				// Run callback
+				pageContents.cb();
+			};
+
+			const switcher = switchTo(() => {
 				if (pageButton.classList.contains("active"))
 					pageContents.onClose();
 
@@ -92,12 +92,11 @@ export const BrandedButtonNavBar: NavBar = (parent: HTMLElement, pages: { [ name
 				icon.style.opacity = "100%";
 				altIcon.style.opacity = "0%";
 				label.style.fontWeight = "normal";
-			}
-		});
-	}
+			});
 
-	// Consider the first page the default
-	emitPageChange(Object.keys(pages)[0]);
+			Clickable(pageButton, onActivate);
+		}
+	});
 
 	return container;
 };
