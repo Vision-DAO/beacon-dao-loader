@@ -1,5 +1,5 @@
-import { NavBar } from "./NavBar";
-import { Page } from "./NavBar";
+import { SideDrawer } from "./SideDrawer";
+import { Page } from "./nav/NavBar";
 import { Component } from "../basic/Component";
 
 export interface MountablePage {
@@ -26,11 +26,6 @@ export const Scaffold = (parent: HTMLElement, { pages, ...args }: ScaffoldProps)
 	workspaceContainer.style.width = "100%";
 	workspaceContainer.style.height = "100%";
 
-	const contentAreaContainer = workspaceContainer.appendChild(document.createElement("div"));
-	contentAreaContainer.style.width = "100%";
-	contentAreaContainer.style.height = "100%";
-	contentAreaContainer.style.position = "relative";
-
 	const mountedPages: { [page: string]: Page } = Object.entries(pages).map(([name, { iconSrc, component }]): [string, Page] => {
 		let mounted: HTMLElement | null = null;
 
@@ -56,8 +51,13 @@ export const Scaffold = (parent: HTMLElement, { pages, ...args }: ScaffoldProps)
 		}];
 	}).reduce((dict, [name, constructed]) => { return { ...dict, [name]: constructed }; }, {});
 
-	const nav = NavBar(workspaceContainer, { pages: mountedPages, ...args });
+	const nav = SideDrawer(workspaceContainer, { pages: mountedPages, ...args });
 	nav.style.width = "15%";
+
+	const contentAreaContainer = workspaceContainer.appendChild(document.createElement("div"));
+	contentAreaContainer.style.width = "100%";
+	contentAreaContainer.style.height = "100%";
+	contentAreaContainer.style.position = "relative";
 
 	return workspaceContainer;
 };
