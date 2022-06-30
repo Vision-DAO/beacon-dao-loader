@@ -3353,6 +3353,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/dompurify@npm:^2.3.3":
+  version: 2.3.3
+  resolution: "@types/dompurify@npm:2.3.3"
+  dependencies:
+    "@types/trusted-types": "*"
+  checksum: 427e2dc60d94d13d7860a293b926b376727cb2f545a3334a3f2e7de695a2bb23058dd15108e49e0651378229b443ee8ae0028034b6f2df9a9008c04fb7ad6f8f
+  languageName: node
+  linkType: hard
+
 "@types/eslint-scope@npm:^3.7.3":
   version: 3.7.3
   resolution: "@types/eslint-scope@npm:3.7.3"
@@ -3472,6 +3481,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/marked@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "@types/marked@npm:4.0.3"
+  checksum: 2fc409a6291cb770688731a444f54e7eab6257c9b565dea4e9d2f3b6654b606e9dd8ea4a924e306b2d2f581dedcb7a27f10f2ca7aed828b11642ab85955341f1
+  languageName: node
+  linkType: hard
+
 "@types/mime@npm:^1":
   version: 1.3.2
   resolution: "@types/mime@npm:1.3.2"
@@ -3569,6 +3585,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: b9bbb2b5c5ead2fb884bb019f61a014e37410bddd295de28184e1b2e71ee6b04120c5ba7b9954617f0bdf962c13d06249ce65004490889c747c80d3f628ea842
+  languageName: node
+  linkType: hard
+
+"@types/trusted-types@npm:*":
+  version: 2.0.2
+  resolution: "@types/trusted-types@npm:2.0.2"
+  checksum: 3371eef5f1c50e1c3c07a127c1207b262ba65b83dd167a1c460fc1b135a3fb0c97b9f508efebd383f239cc5dd5b7169093686a692a501fde9c3f7208657d9b0d
   languageName: node
   linkType: hard
 
@@ -4441,6 +4464,8 @@ __metadata:
     "@libp2p/logger": ^2.0.0
     "@metamask/providers": ^9.0.0
     "@types/blockies": ^0.0.2
+    "@types/dompurify": ^2.3.3
+    "@types/marked": ^4.0.3
     "@types/sharedworker": ^0.0.76
     "@typescript-eslint/eslint-plugin": ^5.29.0
     "@typescript-eslint/parser": ^5.29.0
@@ -4449,6 +4474,7 @@ __metadata:
     blockies: ^0.0.2
     copy-webpack-plugin: ^11.0.0
     css-loader: ^6.7.1
+    dompurify: ^2.3.8
     eslint: ^8.18.0
     html-webpack-plugin: ^5.5.0
     ipfs: ^0.63.4
@@ -4456,6 +4482,7 @@ __metadata:
     ipfs-message-port-client: ^0.12.4
     ipfs-message-port-protocol: ^0.12.1
     ipfs-message-port-server: ^0.12.1
+    marked: ^4.0.17
     node-polyfill-webpack-plugin: ^1.1.4
     process: ^0.11.10
     style-loader: ^3.3.1
@@ -4469,12 +4496,12 @@ __metadata:
 
 "beacon-dao@git@github.com:Vision-DAO/value-tree.git#dev":
   version: 0.1.0
-  resolution: "beacon-dao@git@github.com:Vision-DAO/value-tree.git#commit=ee605abe97eaee46bc272773831fccfb23990e89"
+  resolution: "beacon-dao@git@github.com:Vision-DAO/value-tree.git#commit=de1866d61e9dfba88e0469722d08a0c17008d007"
   dependencies:
     "@openzeppelin/contracts": ^4.6.0
     ethers: ^5.6.9
     ipld-schema-validator: "https://github.com/Vision-DAO/js-ipld-schema-validator"
-  checksum: df4b198751400b217c67bc7404eea564c55037099b9d81eb31b5937a97b82020d3a91c2a717d0fedcc90ebe488c5b0deea7d0d24794ce9f72101a9190a01d2c0
+  checksum: efb54c3df341a35ae02170133751a61501cdedd31faa98ebdf6635cbb804faa8494e3f8d5bb92ace65be4fd19fbc6b976ece75adaf1448585bd94c03a95af18e
   languageName: node
   linkType: hard
 
@@ -5918,6 +5945,13 @@ __metadata:
   dependencies:
     domelementtype: ^2.2.0
   checksum: 4c665ceed016e1911bf7d1dadc09dc888090b64dee7851cccd2fcf5442747ec39c647bb1cb8c8919f8bbdd0f0c625a6bafeeed4b2d656bbecdbae893f43ffaaa
+  languageName: node
+  linkType: hard
+
+"dompurify@npm:^2.3.8":
+  version: 2.3.8
+  resolution: "dompurify@npm:2.3.8"
+  checksum: dc7b32ee57a03fe5166a850071200897cc13fa069287a709e3b2138052d73ec09a87026b9e28c8d2f254a74eaa52ef30644e98e54294c30acbca2a53f1bbc5f4
   languageName: node
   linkType: hard
 
@@ -9968,6 +10002,15 @@ __metadata:
     socks-proxy-agent: ^7.0.0
     ssri: ^9.0.0
   checksum: 5fe9fd9da5368a8a4fe9a3ea5b9aa15f1e91c9ab703cd9027a6b33840ecc8a57c182fbe1c767c139330a88c46a448b1f00da5e32065cec373aff2450b3da54ee
+  languageName: node
+  linkType: hard
+
+"marked@npm:^4.0.17":
+  version: 4.0.17
+  resolution: "marked@npm:4.0.17"
+  bin:
+    marked: bin/marked.js
+  checksum: 33a3c43a20b47bddaf045a59bfc7c3d41cc321931cc663ed231ca3b5b3b195fb2ac2973e687c2afd65b79539c14619baa07d19793f70130160f0af80c06d9b3a
   languageName: node
   linkType: hard
 

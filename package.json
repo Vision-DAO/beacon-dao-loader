@@ -10,22 +10,26 @@
 	"private": true,
 	"scripts": {
 		"build": "webpack --env=production",
-		"dev": "jsipfs daemon & node --experimental-json-modules ./node_modules/.bin/webpack serve --mode=development"
+		"dev": "jsipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '[\"http://localhost:3000\", \"http://127.0.0.1:5001\"]' && jsipfs daemon & node --experimental-json-modules ./node_modules/.bin/webpack serve --mode=development"
 	},
 	"dependencies": {
 		"@libp2p/logger": "^2.0.0",
 		"@metamask/providers": "^9.0.0",
 		"beacon-dao": "git@github.com:Vision-DAO/value-tree.git#dev",
 		"blockies": "^0.0.2",
+		"dompurify": "^2.3.8",
 		"ipfs": "^0.63.4",
 		"ipfs-message-port-client": "^0.12.4",
-		"ipfs-message-port-server": "^0.12.1"
+		"ipfs-message-port-server": "^0.12.1",
+		"marked": "^4.0.17"
 	},
 	"devDependencies": {
 		"@babel/preset-env": "^7.18.2",
 		"@babel/preset-react": "^7.17.12",
 		"@eslint/create-config": "^0.2.0",
 		"@types/blockies": "^0.0.2",
+		"@types/dompurify": "^2.3.3",
+		"@types/marked": "^4.0.3",
 		"@types/sharedworker": "^0.0.76",
 		"@typescript-eslint/eslint-plugin": "^5.29.0",
 		"@typescript-eslint/parser": "^5.29.0",

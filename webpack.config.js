@@ -66,7 +66,10 @@ const dev = {
 		open: true,
 		compress: true,
 		hot: true,
-		port: 3000
+		port: 3000,
+		proxy: {
+			"/api": "http://localhost:5002"
+		}
 	},
 
 	plugins: [
@@ -76,7 +79,7 @@ const dev = {
 		// #define for JS. Used for aliasing IPFS to a global server that only
 		// starts once, but using a browser-based one in production
 		new webpack.DefinePlugin({
-			__IPFS_NODE__: JSON.stringify("http://localhost:5002"),
+			__IPFS_NODE__: JSON.stringify("http://localhost:3000"),
 		}),
 	]
 };

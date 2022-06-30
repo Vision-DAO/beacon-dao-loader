@@ -36,6 +36,16 @@ html, body {
 	color: var(--primary);
 }
 
+a {
+	color: var(--active);
+
+	transition: 0.3s opacity;
+}
+
+a:hover {
+	opacity: 0.8;
+}
+
 .app {
 	width: 100vw;
 	height: 100vh;
@@ -117,6 +127,32 @@ html, body {
 	opacity: 80%;
 }
 
+.tab-nav-item.active {
+	font-weight: bold;
+	border-bottom: 1px solid var(--active);
+}
+
+.markdown p {
+	font-size: 1.5em;
+}
+
+.markdown h2 {
+	font-size: 1.75em;
+}
+
+.shimmer-loading {
+	background: rgba(var(--select-rgb), 0.5);
+	background-image: linear-gradient(to right, rgba(var(--primary-rgb), 0) 0%, rgba(var(--primary-rgb), 0.1) 20%, rgba(var(--primary-rgb), 0.1) 40%, rgba(var(--primary-rgb), 0) 100%);
+	background-repeat: no-repeat;
+	background-size: 200% 100%;
+
+	-webkit-animation-duration: 1s;
+	-webkit-animation-fill-mode: forwards; 
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-name: shimmer;
+	-webkit-animation-timing-function: linear;
+}
+
 /**
  * Used by the loading animation. Too lazy to inline in JS.
  */
@@ -144,4 +180,14 @@ html, body {
 	80%, 100% {
 		-webkit-transform: translate(0,0);
 	};
+}
+
+@-webkit-keyframes shimmer {
+	0% {
+		background-position: 0% 0px;
+	}
+
+	100% {
+		background-position: 200% 0px;
+	}
 }

@@ -26,26 +26,41 @@ export const Scaffold = (parent: HTMLElement, { pages, ...args }: ScaffoldProps)
 	workspaceContainer.style.width = "100%";
 	workspaceContainer.style.height = "100%";
 
+	const mountedContainer = workspaceContainer.appendChild(document.createElement("div"));
+	mountedContainer.style.height = "100%";
+	mountedContainer.style.width = "100%";
+	mountedContainer.style.position = "relative";
+	mountedContainer.style.marginLeft = "4rem";
+
 	const mountedPages: { [page: string]: Page } = Object.entries(pages).map(([name, { iconSrc, component }]): [string, Page] => {
 		let mounted: HTMLElement | null = null;
 
 		return [name, {
 			cb: () => {
 				if (mounted === null) {
-					mounted = component(workspaceContainer);
+					mounted = component(mountedContainer);
+					mounted.style.transition = "opacity 0.3s";
+					mounted.style.width = "100%";
+					mounted.style.height = "100%";
 					mounted.style.position = "absolute";
 					mounted.style.top = "0";
 					mounted.style.left = "0";
-					mounted.style.transition = "opacity 0.3s";
 
 					return;
 				}
 
-				mounted.style.opacity = "100%";
+				mounted.style.opacity = mounted.getAttribute("maxOpacity") || "100%";
+				mounted.style.zIndex = "2";
 			},
 			onClose: () => {
-				if (mounted)
+				if (mounted) {
+					if (mounted.style.opacity !== "0%") {
+						mounted.setAttribute("maxOpacity", mounted.style.opacity);
+					}
+
 					mounted.style.opacity = "0%";
+					mounted.style.zIndex = "1";
+				}
 			},
 			iconSrc,
 		}];
@@ -53,11 +68,7 @@ export const Scaffold = (parent: HTMLElement, { pages, ...args }: ScaffoldProps)
 
 	const nav = SideDrawer(workspaceContainer, { pages: mountedPages, ...args });
 	nav.style.width = "15%";
-
-	const contentAreaContainer = workspaceContainer.appendChild(document.createElement("div"));
-	contentAreaContainer.style.width = "100%";
-	contentAreaContainer.style.height = "100%";
-	contentAreaContainer.style.position = "relative";
+	workspaceContainer.insertBefore(nav, mountedContainer);
 
 	return workspaceContainer;
 };

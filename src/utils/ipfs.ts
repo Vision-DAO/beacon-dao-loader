@@ -2,12 +2,29 @@ import { IPFSClient } from "ipfs-message-port-client";
 import { CID } from "multiformats/cid";
 
 /**
+ * A smart contract that provides access to metadata at a CID.
+ */
+export interface MetaProvider {
+	ipfsAddr(): Promise<string>,
+	address: string,
+	on(event: string, ln: () => void): void,
+	removeAllListeners(): this,
+	
+	// Events that can cause a state change in metadata
+	metaEvents: string[],
+}
+
+/**
  * A utility class that caches IPFS dag objects by their CID's.
  * Content at a CID never changes, so it can be cached COMPLETELY.
  */
 export class IPFSCache {
 	private items: { [cid: string]: unknown };
 	private ipfs: IPFSClient;
+
+	// Contracts that have cached metadata and can be dependencies for elements
+	private blobs: { [addr: string]: string };
+	private listeners: { [addr: string]: ((val: unknown) => void)[] };
 
 	/**
 	 * Creates an empty cache that will use the indicated client to query
@@ -18,6 +35,8 @@ export class IPFSCache {
 	constructor(client: IPFSClient) {
 		this.ipfs = client;
 		this.items = {};
+		this.blobs = {};
+		this.listeners = {};
 	}
 
 	/**
@@ -28,11 +47,67 @@ export class IPFSCache {
 		if (cid.toString() in this.items)
 			return this.items[cid.toString()] as T;
 
-		const res = await this.ipfs.dag.get(cid);
+		try {
+			const res = await this.ipfs.dag.get(cid);
 
-		if (res.value === null)
+			if (res.value === null)
+				return null;
+
+			return res.value as T;
+		} catch (e) {
+			console.error(e);
+
+			return null;
+		}
+	}
+
+	/**
+	 * Gets the IPFS metadata from the contract by calling the `ipfsAddr` method.
+	 * Returns an initialization (i.e., first load), unless a reload is
+	 * triggered.
+	 */
+	async getMeta<T>(contract: MetaProvider): Promise<T | null> {
+		// If the contract hasn't been seen before, perform its initial load
+		if (!(contract.address in this.blobs)) {
+			this.blobs[contract.address] = await contract.ipfsAddr();
+		}
+
+		const cid = CID.parse(this.blobs[contract.address]);
+
+		if (cid === null)
 			return null;
 
-		return res.value as T;
+		return await this.get(cid);
+	}
+
+	/**
+	 * Registers a listener for changes to the metadata stored at a contract.
+	 */
+	onMeta<T>(contract: MetaProvider, listener: (v: T) => void) {
+		contract.removeAllListeners();
+
+		if (!(contract.address in this.listeners))
+			this.listeners[contract.address] = [];
+
+		this.listeners[contract.address].push(listener as (v: unknown) => void);
+
+		// Register the callback nested within a listener that updates the IPFS
+		// address of the contract's metadata whenever a state-changing event is
+		// emitted
+		contract.metaEvents.forEach((e) => {
+			contract.on(e, async () => {
+				const newAddr = CID.parse(await contract.ipfsAddr());
+
+				if (newAddr === null)
+					return;
+
+				const newMeta = await this.getMeta(contract);
+
+				if (newMeta === null)
+					return;
+
+				this.listeners[contract.address].forEach((ln) => ln(newMeta));
+			});
+		});
 	}
 }

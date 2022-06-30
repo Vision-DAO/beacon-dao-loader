@@ -1,5 +1,20 @@
 import { MetaMaskInpageProvider } from "@metamask/providers";
-import { DEFAULT_NETWORK, EXPLORER_URLS } from "./conf";
+import { DEFAULT_NETWORK, EXPLORER_URLS, DEPLOYED_CONTRACTS } from "./conf";
+
+/**
+ * Gets the address of the deployed Beacon DAO on the current network.
+ */
+export const networkDeployedDao = (eth: MetaMaskInpageProvider): string | null => {
+	if (eth.chainId === null)
+		return null;
+
+	const chain = parseInt(eth.chainId, 16);
+
+	if (!(chain in DEPLOYED_CONTRACTS))
+		return null;
+
+	return DEPLOYED_CONTRACTS[chain];
+};
 
 /**
  * Opens the etherscan page for an address.
