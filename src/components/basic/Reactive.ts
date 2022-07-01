@@ -41,6 +41,13 @@ export const TextElemUpdater = (val: string, elem: HTMLElement) => {
 };
 
 /**
+ * Monad that maps a component to a reactive component with the indicated props.
+ */
+export const ReactiveComponent = <TContent, TEvent = TContent>(elem: Component,
+	props: ReactiveProps<TContent, TEvent>): Component => 
+		(parent: Node) => Reactive(elem(parent), props);
+
+/**
  * A wrapper for components that needs to transition between loading, and
  * multiple viewing states.
  *
@@ -67,6 +74,8 @@ export const Reactive = <TContent, TEvent = TContent>(elem: HTMLElement, {
 
 		if (loader !== null) {
 			elem.removeChild(loader);
+		} else {
+			elem.style.width = "auto";
 		}
 
 		updater(initContent, elem);

@@ -3,6 +3,7 @@ import { IdeaMetaProvider } from "../utils/idea";
 import { IPFSCache } from "../utils/ipfs";
 import { TabbedNavBar } from "../components/layout/nav/TabbedNavBar";
 import { Reactive, TextElemUpdater, NullTransformer } from "../components/basic/Reactive";
+import { SideDrawer } from "../components/idea/SideDrawer";
 import { NotFound } from "../components/basic/NotFound";
 import { IdeaMetadata } from "beacon-dao";
 import { marked } from "marked";
@@ -83,14 +84,25 @@ const DescriptionLoader: Component = (parent: Node): HTMLElement => {
 
 export const AboutPage = (contract: IdeaMetaProvider, metaCache: IPFSCache, nullTransformer: <T,>(v: T | null) => T): Component => {
 	return (parent: Node) => {
+		// Displays the contents of the idea on one side, and a sidebar on the right
 		const container = parent.appendChild(document.createElement("div"));
 		container.style.fontSize = "0.9em";
+		container.style.display = "flex";
+		container.style.flexFlow = "row nowrap";
+		container.style.justifyContent = "space-between";
+		container.style.alignItems = "flex-start";
+		container.style.paddingTop = "1em";
 
-		const descriptionLabel = container.appendChild(document.createElement("h1"));
+		const mainWorkArea = container.appendChild(document.createElement("div"));
+		mainWorkArea.style.marginRight = "4em";
+		mainWorkArea.style.flexGrow = "1";
+
+		const descriptionLabel = mainWorkArea.appendChild(document.createElement("h1"));
 		descriptionLabel.innerText = "Description";
+		descriptionLabel.style.marginTop = "0";
 
 		// A live updating description of the DAO, rendered in sanitized markdown
-		const description = Reactive<string, IdeaMetadata>(container.appendChild(document.createElement("div")), {
+		const description = Reactive<string, IdeaMetadata>(mainWorkArea.appendChild(document.createElement("div")), {
 			// Renders the description of the DAO as markdown
 			updater: (markdown, node) => node.innerHTML = dompurify.sanitize(marked.parse(markdown)),
 			init: metaCache.getMeta<IdeaMetadata>(contract).then((meta) => nullTransformer(meta).description),
@@ -100,6 +112,9 @@ export const AboutPage = (contract: IdeaMetaProvider, metaCache: IPFSCache, null
 		});
 		description.style.fontSize = "0.85em";
 		description.classList.add("markdown");
+
+		const drawer = SideDrawer(contract, metaCache)(container);
+		drawer.style.maxWidth = "30%";
 
 		return container;
 	};

@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import CopyWebpackPlugin from "copy-webpack-plugin";
 import NodePolyfillPlugin from "node-polyfill-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
+import process from "process";
 
 import pkg from "./package.json";
 
@@ -129,6 +130,7 @@ const common = {
 			__RELEASE_DATE__: JSON.stringify(new Date()),
 			__APP_VERSION__: JSON.stringify(pkg.version.replaceAll("^", "")),
 			__IPFS_VERSION__: JSON.stringify(pkg.dependencies.ipfs.replaceAll("^", "")),
+			__IPFS_GATEWAY__: JSON.stringify(process.env.IPFS_GATEWAY || "https://cloudflare-ipfs.com"),
 		})
 	],
 

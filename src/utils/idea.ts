@@ -1,5 +1,16 @@
 import { Idea, IdeaMetadata } from "beacon-dao";
+import { PropStatus } from "./prop";
 import { MetaProvider, IPFSCache } from "./ipfs";
+
+/**
+ * Information about an idea that is obtained through analyzing events with the
+ * contract.
+ */
+export interface IdeaStatistics {
+	totalVotes: number,
+	author: string,
+	proposalCounts: PropStatus[],
+}
 
 /**
  * A convenience class that wraps an Idea contract, providing methods for

@@ -5,9 +5,11 @@
  */
 declare const __IPFS_VERSION__: string;
 declare const __APP_VERSION__: string;
+declare const __IPFS_GATEWAY__: string;
 
 export const IPFS_VERSION = __IPFS_VERSION__;
 export const APP_VERSION = __APP_VERSION__;
+export const IPFS_GATEWAY = __IPFS_GATEWAY__;
 
 /**
  * Human-readable equivalents for supported networks.

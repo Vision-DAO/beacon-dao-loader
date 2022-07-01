@@ -62,17 +62,24 @@ export class IPFSCache {
 	}
 
 	/**
-	 * Gets the IPFS metadata from the contract by calling the `ipfsAddr` method.
-	 * Returns an initialization (i.e., first load), unless a reload is
-	 * triggered.
+	 * Gets the address of the metadata at the specified contract.
 	 */
-	async getMeta<T>(contract: MetaProvider): Promise<T | null> {
+	async getMetaAddr(contract: MetaProvider): Promise<string> {
 		// If the contract hasn't been seen before, perform its initial load
 		if (!(contract.address in this.blobs)) {
 			this.blobs[contract.address] = await contract.ipfsAddr();
 		}
 
-		const cid = CID.parse(this.blobs[contract.address]);
+		return this.blobs[contract.address];
+	}
+
+	/**
+	 * Gets the IPFS metadata from the contract by calling the `ipfsAddr` method.
+	 * Returns an initialization (i.e., first load), unless a reload is
+	 * triggered.
+	 */
+	async getMeta<T>(contract: MetaProvider): Promise<T | null> {
+		const cid = CID.parse(await this.getMetaAddr(contract));
 
 		if (cid === null)
 			return null;
