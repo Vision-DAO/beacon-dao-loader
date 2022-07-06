@@ -13,6 +13,7 @@
 		"dev": "jsipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '[\"http://localhost:3000\", \"http://127.0.0.1:5001\"]' && jsipfs daemon & node --experimental-json-modules ./node_modules/.bin/webpack serve --mode=development"
 	},
 	"dependencies": {
+		"@achingbrain/webrtc-direct": "^0.7.2",
 		"@libp2p/logger": "^2.0.0",
 		"@metamask/providers": "^9.0.0",
 		"beacon-dao": "git@github.com:Vision-DAO/value-tree.git#dev",
@@ -21,7 +22,10 @@
 		"ipfs": "^0.63.4",
 		"ipfs-message-port-client": "^0.12.4",
 		"ipfs-message-port-server": "^0.12.1",
-		"marked": "^4.0.17"
+		"libp2p": "^0.37.3",
+		"libp2p-kad-dht": "^0.28.6",
+		"marked": "^4.0.17",
+		"peer-id": "^0.16.0"
 	},
 	"devDependencies": {
 		"@babel/preset-env": "^7.18.2",

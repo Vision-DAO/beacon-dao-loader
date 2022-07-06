@@ -2,15 +2,16 @@ import { IPFSCache } from "../utils/ipfs";
 import { Scaffold } from "../components/layout/Scaffold";
 import { DaoHomePage } from "./dao_home";
 import { networkDeployedDao } from "../utils/eth";
-import { IdeaMetaProvider } from "../utils/idea";
+import { IdeaMetaProvider, IdeaStatisticsProvider } from "../utils/idea";
 import { Idea__factory } from "beacon-dao";
 import { providers } from "ethers";
+import { Libp2p } from "libp2p";
 
 /**
  * A component that lets a user interact with a suite of DAO helpers, and then
  * log out at the end.
  */
-export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache, account: string): Promise<void> => {
+export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache, libp2p: Libp2p, account: string): Promise<void> => {
 	// Wonky cast due to metamask type declaration, but this should work.
 	const provider = new providers.Web3Provider(window.ethereum as unknown as providers.ExternalProvider);
 
@@ -29,20 +30,25 @@ export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache, account: 
 		return;
 
 	// Global wrapper for the Idea contract
-	const contract = new IdeaMetaProvider(Idea__factory.connect(daoAddr, provider));
+	const contract = Idea__factory.connect(daoAddr, provider);
+	const wrapper = {
+		contract,
+		meta: new IdeaMetaProvider(contract),
+		stats: new IdeaStatisticsProvider(contract, libp2p, ipfs),
+	};
 
 	await new Promise<void>((resolve) => {
 		const pages = {
 			"Beacon DAO": {
-				component: DaoHomePage(contract, ipfs),
+				component: DaoHomePage(wrapper, ipfs),
 				iconSrc: "assets/icons/home.svg"
 			},
 			"Wallet": {
-				component: DaoHomePage(contract, ipfs),
+				component: DaoHomePage(wrapper, ipfs),
 				iconSrc: "assets/icons/bank.svg"
 			},
 			"DAO Kernel": {
-				component: DaoHomePage(contract, ipfs),
+				component: DaoHomePage(wrapper, ipfs),
 				iconSrc: "assets/icons/chip.svg",
 			}
 		};

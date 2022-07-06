@@ -2,6 +2,18 @@ import { MetaMaskInpageProvider } from "@metamask/providers";
 import { DEFAULT_NETWORK, EXPLORER_URLS, DEPLOYED_CONTRACTS } from "./conf";
 
 /**
+ * Gets the URL of the network's explorer, or returns null.
+ */
+export const networkExplorer = (eth: MetaMaskInpageProvider): string | null => {
+	const net = eth.chainId && parseInt(eth.chainId);
+
+	if (!net || !(net in EXPLORER_URLS))
+		return null;
+
+	return EXPLORER_URLS[net];
+};
+
+/**
  * Gets the address of the deployed Beacon DAO on the current network.
  */
 export const networkDeployedDao = (eth: MetaMaskInpageProvider): string | null => {

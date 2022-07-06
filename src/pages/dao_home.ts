@@ -1,5 +1,5 @@
 import { Component } from "../components/basic/Component";
-import { IdeaMetaProvider } from "../utils/idea";
+import { Idea } from "../utils/idea";
 import { IPFSCache } from "../utils/ipfs";
 import { TabbedNavBar } from "../components/layout/nav/TabbedNavBar";
 import { Reactive, TextElemUpdater, NullTransformer } from "../components/basic/Reactive";
@@ -16,7 +16,7 @@ import dompurify from "dompurify";
  * - About
  * - Proposals
  */
-export const DaoHomePage = (contract: IdeaMetaProvider, metaCache: IPFSCache): Component => {
+export const DaoHomePage = (contract: Idea, metaCache: IPFSCache): Component => {
 	return (parent: Node) => {
 		const container = parent.appendChild(document.createElement("div"));
 		container.style.zIndex = "2";
@@ -34,8 +34,8 @@ export const DaoHomePage = (contract: IdeaMetaProvider, metaCache: IPFSCache): C
 		// Live updating title of the DAO
 		const title = Reactive<string, IdeaMetadata>(container.appendChild(document.createElement("h1")), {
 			updater: TextElemUpdater,
-			init: metaCache.getMeta<IdeaMetadata>(contract).then((meta) => viewTransformer(meta).title),
-			stream: contract.stream(metaCache),
+			init: metaCache.getMeta<IdeaMetadata>(contract.meta).then((meta) => viewTransformer(meta).title),
+			stream: contract.meta.stream(metaCache),
 			transformer: (meta) => meta.title,
 		});
 		title.style.fontWeight = "normal";
@@ -82,7 +82,7 @@ const DescriptionLoader: Component = (parent: Node): HTMLElement => {
 	return details;
 };
 
-export const AboutPage = (contract: IdeaMetaProvider, metaCache: IPFSCache, nullTransformer: <T,>(v: T | null) => T): Component => {
+export const AboutPage = (contract: Idea, metaCache: IPFSCache, nullTransformer: <T,>(v: T | null) => T): Component => {
 	return (parent: Node) => {
 		// Displays the contents of the idea on one side, and a sidebar on the right
 		const container = parent.appendChild(document.createElement("div"));
@@ -105,8 +105,8 @@ export const AboutPage = (contract: IdeaMetaProvider, metaCache: IPFSCache, null
 		const description = Reactive<string, IdeaMetadata>(mainWorkArea.appendChild(document.createElement("div")), {
 			// Renders the description of the DAO as markdown
 			updater: (markdown, node) => node.innerHTML = dompurify.sanitize(marked.parse(markdown)),
-			init: metaCache.getMeta<IdeaMetadata>(contract).then((meta) => nullTransformer(meta).description),
-			stream: contract.stream(metaCache),
+			init: metaCache.getMeta<IdeaMetadata>(contract.meta).then((meta) => nullTransformer(meta).description),
+			stream: contract.meta.stream(metaCache),
 			transformer: (meta) => meta.description,
 			loadingContent: DescriptionLoader,
 		});

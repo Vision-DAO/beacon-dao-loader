@@ -3,7 +3,8 @@ import { Clickable } from "../basic/Clickable";
 import { ReactiveComponent } from "../basic/Reactive";
 import { KeyValueLabel } from "../basic/KeyValueLabel";
 import { IPFSCache } from "../../utils/ipfs";
-import { IdeaMetaProvider } from "../../utils/idea";
+import { Idea, IdeaStatistics, defaultStats } from "../../utils/idea";
+import { networkExplorer } from "../../utils/eth";
 import { IPFS_GATEWAY } from "../../utils/conf";
 
 const Label = (text: string, mapper?: (elem: HTMLElement) => void): Component =>
@@ -60,13 +61,28 @@ const LinkLabel: Component = (parent: Node): HTMLElement => {
  *
  * TODO: Replace this with a module, instead.
  */
-export const SideDrawer = (contract: IdeaMetaProvider, metaCache: IPFSCache): Component =>
+export const SideDrawer = (contract: Idea, metaCache: IPFSCache): Component =>
 	(parent: Node): HTMLElement => {
 		const container = parent.appendChild(document.createElement("div"));
 		container.style.display = "flex";
 		container.style.flexFlow = "column nowrap";
 		container.style.justifyContent = "flex-start";
 		container.style.alignItems = "stretch";
+
+		// A label displaying the address of the author of the contract
+		KeyValueLabel(Label("Created by"), ReactiveComponent<string, IdeaStatistics>(LinkLabel, {
+			updater: (v, node) => {
+				const label = node.querySelector("p");
+
+				if (label)
+					label.innerText = v;
+
+				node.setAttribute("link_dest", `${networkExplorer(window.ethereum)}`);
+			},
+			init: metaCache.getMeta<IdeaStatistics>(contract.stats).then((meta) => (meta ?? defaultStats).author),
+			stream: contract.stats.stream(metaCache),
+			transformer: (meta) => meta.author,
+		}));
 
 		// A label that displays the IPFS CID of the content stored in the Idea
 		KeyValueLabel(Label("Data ID"), ReactiveComponent<string, string>(LinkLabel, {
@@ -78,9 +94,9 @@ export const SideDrawer = (contract: IdeaMetaProvider, metaCache: IPFSCache): Co
 
 				node.setAttribute("link_dest", `${IPFS_GATEWAY}/ipfs/${v}`);
 			},
-			init: contract.ipfsAddr(),
-			stream: (ln) => contract.on("ProposalAccepted", async () => {
-				ln(await metaCache.getMetaAddr(contract));
+			init: contract.meta.ipfsAddr(),
+			stream: (ln) => contract.meta.on(async () => {
+				ln(await metaCache.getMetaAddr(contract.meta));
 			}),
 			transformer: (v) => v,
 			loadingContent: (parent: Node): HTMLElement => {

@@ -1,5 +1,5 @@
 export enum PropStatus {
-	Successful,
-	Rejected,
-	Pending,
+	Successful = 0,
+	Rejected = 1,
+	Pending = 2,
 }

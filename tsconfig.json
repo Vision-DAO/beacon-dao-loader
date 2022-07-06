@@ -4,6 +4,7 @@
 		"module": "es2020",
 		"strict": true,
 		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
 		"moduleResolution": "node",
 		"outDir": "./dist/"
 	},

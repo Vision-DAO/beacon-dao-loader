@@ -7,11 +7,7 @@ import { CID } from "multiformats/cid";
 export interface MetaProvider {
 	ipfsAddr(): Promise<string>,
 	address: string,
-	on(event: string, ln: () => void): void,
-	removeAllListeners(): this,
-	
-	// Events that can cause a state change in metadata
-	metaEvents: string[],
+	on(ln: () => void): void,
 }
 
 /**
@@ -20,7 +16,7 @@ export interface MetaProvider {
  */
 export class IPFSCache {
 	private items: { [cid: string]: unknown };
-	private ipfs: IPFSClient;
+	public ipfs: IPFSClient;
 
 	// Contracts that have cached metadata and can be dependencies for elements
 	private blobs: { [addr: string]: string };
@@ -91,8 +87,6 @@ export class IPFSCache {
 	 * Registers a listener for changes to the metadata stored at a contract.
 	 */
 	onMeta<T>(contract: MetaProvider, listener: (v: T) => void) {
-		contract.removeAllListeners();
-
 		if (!(contract.address in this.listeners))
 			this.listeners[contract.address] = [];
 
@@ -101,20 +95,18 @@ export class IPFSCache {
 		// Register the callback nested within a listener that updates the IPFS
 		// address of the contract's metadata whenever a state-changing event is
 		// emitted
-		contract.metaEvents.forEach((e) => {
-			contract.on(e, async () => {
-				const newAddr = CID.parse(await contract.ipfsAddr());
+		contract.on(async () => {
+			const newAddr = CID.parse(await contract.ipfsAddr());
 
-				if (newAddr === null)
-					return;
+			if (newAddr === null)
+				return;
 
-				const newMeta = await this.getMeta(contract);
+			const newMeta = await this.getMeta(contract);
 
-				if (newMeta === null)
-					return;
+			if (newMeta === null)
+				return;
 
-				this.listeners[contract.address].forEach((ln) => ln(newMeta));
-			});
+			this.listeners[contract.address].forEach((ln) => ln(newMeta));
 		});
 	}
 }
