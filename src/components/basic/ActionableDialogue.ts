@@ -6,7 +6,8 @@ import { Button } from "./Button";
  */
 export enum DialogueStyle {
 	Warning,
-	Labeled
+	Labeled,
+	Secondary
 }
 
 /**
@@ -19,22 +20,27 @@ interface DialogueProps {
 	btnText?: string,
 	btnIconSrc?: string,
 	onClick?: () => void,
-	style: DialogueStyle,
+	style: DialogueStyle[],
 }
 
-export type DialogueComponent = { node: Element, setLoading: (loading: boolean) => void };
+export type DialogueComponent = { node: HTMLElement, setLoading: (loading: boolean) => void };
 
 /**
  * A component that renders a curved, closable dialogue displaying a message,
  * title, and button with some text.
  */
-export const ActionableDialogue = (parent: Element = document.body, { title, titleIconSrc, msg, btnText, btnIconSrc, onClick, style = DialogueStyle.Warning }: DialogueProps): DialogueComponent => {
+export const ActionableDialogue = (parent: Element = document.body, { title, titleIconSrc, msg, btnText, btnIconSrc, onClick, style = [DialogueStyle.Warning] }: DialogueProps): DialogueComponent => {
 	const container = parent.appendChild(document.createElement("div"));
 	container.classList.add("dialogue");
 	container.style.backgroundColor = "var(--secondary-bg-color)";
 	container.style.padding = "2em";
 	container.style.borderRadius = "0.5rem";
 	container.style.border = "1.5px solid var(--main-bg-lightened)";
+	container.style.opacity = "100%";
+	container.style.transition = "0.3s";
+
+	if (DialogueStyle.Secondary in style)
+		container.style.backgroundColor = "var(--main-bg-color)";
 
 	const headerContainer = container.appendChild(document.createElement("div"));
 	headerContainer.style.width = "100%";
@@ -55,18 +61,14 @@ export const ActionableDialogue = (parent: Element = document.body, { title, tit
 	message.style.opacity = "0.7";
 	message.innerText = msg;
 
-	switch (style) {
-	case DialogueStyle.Warning:
+	if (DialogueStyle.Warning in style)
 		headerImage.setAttribute("src", "assets/icons/warning.svg");
 
-		break;
-	case DialogueStyle.Labeled:
+	if (DialogueStyle.Labeled in style) {
 		if (titleIconSrc)
 			headerImage.setAttribute("src", titleIconSrc);
 		else
 			container.removeChild(headerImage);
-
-		break;
 	}
 
 	// Only render the button if there is text to fill it. Match the style

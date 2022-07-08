@@ -17,3 +17,9 @@ export const fromBytes = (b: Uint8Array): string => {
 	const decoder = new TextDecoder();
 	return decoder.decode(b);
 };
+
+/**
+ * Converts eval-able JS code into a URL blob.
+ */
+export const blobifyEval = (src: string): string =>
+	"data:text/javascript;charset=utf-8," + encodeURIComponent(src);

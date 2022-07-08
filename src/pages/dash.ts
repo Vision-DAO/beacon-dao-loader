@@ -1,17 +1,16 @@
 import { IPFSCache } from "../utils/ipfs";
-import { Scaffold } from "../components/layout/Scaffold";
-import { DaoHomePage } from "./dao_home";
+import { IdeaMetaProvider, instanceOfPayloadLoader, instanceOfPayload } from "../utils/idea";
 import { networkDeployedDao } from "../utils/eth";
-import { IdeaMetaProvider, IdeaStatisticsProvider } from "../utils/idea";
-import { Idea__factory } from "beacon-dao";
+import { blobifyEval } from "../utils/common";
+import { ActionableDialogue, DialogueStyle } from "../components/basic/ActionableDialogue";
+import { contracts, schema } from "beacon-dao";
 import { providers } from "ethers";
-import { Libp2p } from "libp2p";
 
 /**
  * A component that lets a user interact with a suite of DAO helpers, and then
  * log out at the end.
  */
-export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache, libp2p: Libp2p, account: string): Promise<void> => {
+export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache): Promise<void> => {
 	// Wonky cast due to metamask type declaration, but this should work.
 	const provider = new providers.Web3Provider(window.ethereum as unknown as providers.ExternalProvider);
 
@@ -22,6 +21,21 @@ export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache, libp2p: L
 	dashboard.style.opacity = "0%";
 	dashboard.style.transition = "opacity 0.3s";
 
+	// Display a loading icon while the VM is cold-booting
+	const { node: loader, setLoading } = ActionableDialogue(dashboard, {
+		title: "Connecting to Vision",
+		titleIconSrc: "assets/icons/loading.svg",
+		msg: "Preparing base Virtual Machine modules",
+		style: [DialogueStyle.Secondary, DialogueStyle.Labeled],
+		btnText: "Go Faster!",
+	});
+
+	setLoading(true);
+
+	// Reveal the curtain behind this pages
+	app.classList.add("active");
+	dashboard.style.opacity = "100%";
+
 	const daoAddr = networkDeployedDao(window.ethereum);
 
 	// This will never happen, because the login flow ensures that the user
@@ -30,37 +44,55 @@ export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache, libp2p: L
 		return;
 
 	// Global wrapper for the Idea contract
-	const contract = Idea__factory.connect(daoAddr, provider);
-	const wrapper = {
-		contract,
-		meta: new IdeaMetaProvider(contract),
-		stats: new IdeaStatisticsProvider(contract, libp2p, ipfs),
+	const contract = new IdeaMetaProvider(contracts.Idea__factory.connect(daoAddr, provider));
+
+	// Starts all of the WASM modules specified as payloads for the given idea
+	// metadata
+	const spawnWasm = async (metadata: schema.IdeaMetadata) => {
+		for (const cid of metadata.payload) {
+			const payload: schema.IdeaPayload | null = await ipfs.get(cid);
+
+			if (payload === null) {
+				console.error("Beacon DAO: Failed to load.");
+
+				return;
+			}
+
+			// Use the loader to start the WASM module
+			const maybeLoader = await import(/* webpackIgnore: true */ blobifyEval(payload.loader));
+			if (!instanceOfPayloadLoader(maybeLoader)) {
+				console.error("Beacon DAO: Invalid payload loader.");
+
+				return;
+			}
+
+			const loader: schema.PayloadLoader = maybeLoader;
+
+			const module = await loader.default(payload.module);
+			if (!instanceOfPayload(module)) {
+				console.error("Beacon DAO: Could not load module.");
+
+				return;
+			}
+
+			module.start();
+		}
+
+		// Remove loading indicator now that initial load is done
+		setLoading(false);
+		loader.style.opacity = "0%";
+		setTimeout(() => dashboard.removeChild(loader), 300);
 	};
 
-	await new Promise<void>((resolve) => {
-		const pages = {
-			"Beacon DAO": {
-				component: DaoHomePage(wrapper, ipfs),
-				iconSrc: "assets/icons/home.svg"
-			},
-			"Wallet": {
-				component: DaoHomePage(wrapper, ipfs),
-				iconSrc: "assets/icons/bank.svg"
-			},
-			"DAO Kernel": {
-				component: DaoHomePage(wrapper, ipfs),
-				iconSrc: "assets/icons/chip.svg",
-			}
-		};
+	// Start the modules specified by the contract
+	const meta = await ipfs.getMeta<schema.IdeaMetadata>(contract);
 
-		// Close the page when the user pushes logout
-		Scaffold(dashboard, { account, onLogout: () => {
-			app.removeChild(dashboard);
-			resolve();
-		}, pages });
+	if (meta !== null)
+		spawnWasm(meta);
 
-		// Reveal the curtain behind this pages
-		app.classList.add("active");
-		dashboard.style.opacity = "100%";
-	});
+	// Listen to live updates to the code specified by the Beacon DAO
+	ipfs.onMeta<schema.IdeaMetadata>(contract, spawnWasm);
+
+	// TODO: Logout system call
+	await new Promise<void>(() => ({}));
 };

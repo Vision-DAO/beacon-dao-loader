@@ -2,13 +2,6 @@ import { MetaMaskInpageProvider } from "@metamask/providers";
 
 import { IPFSClient } from "ipfs-message-port-client";
 import { IPFSCache } from "./utils/ipfs";
-import { createLibp2p } from "libp2p";
-import { WebSockets } from "@libp2p/websockets";
-import { WebRTCStar } from "@libp2p/webrtc-star";
-import { Noise } from "@chainsafe/libp2p-noise";
-import { Mplex } from "@libp2p/mplex";
-import { KadDHT } from "@libp2p/kad-dht";
-import { Bootstrap } from "@libp2p/bootstrap";
 import { LoginPage } from "./pages/login";
 import { DashboardPage } from "./pages/dash";
 
@@ -32,35 +25,7 @@ declare global {
 	// Use one global IPFS instance. Load it in later if it hasn't loaded yet
 	let gIpfs: Promise<IPFSClient>;
 	let ipfs: IPFSCache | undefined = undefined;
-	const webRtcStar = new WebRTCStar();
-	const gLibp2p = createLibp2p({
-		addresses: {
-			listen: [
-				"/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star",
-				"/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star",
-			],
-		},
-		transports: [
-			new WebSockets(),
-			webRtcStar,
-		],
-		connectionEncryption: [new Noise()],
-		streamMuxers: [new Mplex()],
-		peerDiscovery: [
-			webRtcStar.discovery,
-			new Bootstrap({
-				list: [
-					"/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN",
-					"/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb",
-					"/dnsaddr/bootstrap.libp2p.io/p2p/QmZa1sAxajnQjVM8WjWXoMbmPd7NsWhfKsPkErzpm9wGkp",
-					"/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa",
-					"/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt",
-				],
-			})
-		],
-		dht: new KadDHT(),
-	});
-
+	
 	// Load an alternative HTTP-based client in testing environments only
 	if (__IPFS_NODE__) {
 		const { create } = await import("ipfs-http-client");
@@ -86,22 +51,22 @@ declare global {
 		return;
 
 	// The user will continuously log in and log out for all of eternity
-	for(;;) {
+	for (;;) {
 		// Run the user through a flow to get their active account information, and
 		// get their consent. Leave them on a screen if they get stuck in the flow
 		// This screen should be descriptive enough and give the user continuity
 		// anyway through navigation items on it
-		const res = await LoginPage(app, gIpfs, gLibp2p);
+		const res = await LoginPage(app, gIpfs);
 
 		if (res === null)
 			return null;
 
-		const { account, ipfs: rawIpfs, libp2p } = res;
+		const { ipfs: rawIpfs } = res;
 
 		if (!ipfs)
 			ipfs = new IPFSCache(rawIpfs);
 
 		// Wait until the user logs out, then start the log in process again
-		await DashboardPage(app, ipfs, libp2p, account);
+		await DashboardPage(app, ipfs);
 	}
 })();

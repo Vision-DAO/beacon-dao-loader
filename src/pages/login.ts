@@ -2,7 +2,6 @@ import { DEPLOYED_CONTRACTS } from "../utils/conf";
 import { METAMASK_SITE, ERR_NO_TEMPLATES } from "../utils/common";
 import { addAndChangeNetwork, login } from "../utils/eth";
 import { IPFSClient } from "ipfs-message-port-client";
-import { Libp2p } from "libp2p";
 
 import LogoSquare from "../components/basic/LogoSquare";
 import { ActionableDialogue, DialogueStyle, DialogueComponent } from "../components/basic/ActionableDialogue";
@@ -12,7 +11,7 @@ import { ActionableDialogue, DialogueStyle, DialogueComponent } from "../compone
  *
  * Returns null if the user has more steps they must complete to finish the flow.
  */
-export const LoginPage = async (app: Element, eventualIpfs: Promise<IPFSClient>, eventualLibp2p: Promise<Libp2p>): Promise<{ account: string, ipfs: IPFSClient, libp2p: Libp2p } | null> => {
+export const LoginPage = async (app: Element, eventualIpfs: Promise<IPFSClient>): Promise<{ ipfs: IPFSClient } | null> => {
 	const loginContainer = app.appendChild(document.createElement("div"));
 	loginContainer.classList.add("loginContainer");
 
@@ -36,7 +35,7 @@ export const LoginPage = async (app: Element, eventualIpfs: Promise<IPFSClient>,
 				msg: "Please install an Ethereum wallet. Most users use Metamask.",
 				onClick: () => window.location.assign(METAMASK_SITE),
 				btnText: "Install Metamask",
-				style: DialogueStyle.Warning
+				style: [DialogueStyle.Warning]
 			}
 		);
 
@@ -52,7 +51,7 @@ export const LoginPage = async (app: Element, eventualIpfs: Promise<IPFSClient>,
 				msg: "Your wallet was unable to form a connection with a blockchain. Please try again later.",
 				onClick: () => window.location.reload(),
 				btnText: "Reload",
-				style: DialogueStyle.Warning
+				style: [DialogueStyle.Warning]
 			}
 		);
 
@@ -65,14 +64,12 @@ export const LoginPage = async (app: Element, eventualIpfs: Promise<IPFSClient>,
 			title: "Connecting to the IPFS Network",
 			msg: "The client is currently connecting to the IPFS network. Please wait.",
 			btnText: "Go Faster",
-			style: DialogueStyle.Labeled,
+			style: [DialogueStyle.Labeled],
 			titleIconSrc: "assets/icons/cloud.svg",
 		});
 	setLoading(true);
 
 	const ipfs = await eventualIpfs;
-	const libp2p = await eventualLibp2p;
-	await libp2p.start();
 	loginContainer.removeChild(node);
 
 	let loginButton: DialogueComponent | null = null;
@@ -109,7 +106,7 @@ export const LoginPage = async (app: Element, eventualIpfs: Promise<IPFSClient>,
 						if (loginButton)
 							loginButton.setLoading(false);
 					},
-					style: DialogueStyle.Labeled,
+					style: [DialogueStyle.Labeled],
 				});
 		});
 	}
@@ -147,7 +144,7 @@ export const LoginPage = async (app: Element, eventualIpfs: Promise<IPFSClient>,
 
 						await addAndChangeNetwork(window.ethereum);
 					},
-					style: DialogueStyle.Warning,
+					style: [DialogueStyle.Warning],
 				}
 			);
 		}
@@ -163,8 +160,7 @@ export const LoginPage = async (app: Element, eventualIpfs: Promise<IPFSClient>,
 	// Require a restart if they change again
 	window.ethereum.on("chainChanged", () => window.location.reload());
 
-	// Done with logging in
 	app.removeChild(loginContainer);
 
-	return { account, ipfs, libp2p };
+	return { ipfs };
 };
