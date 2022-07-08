@@ -3,6 +3,7 @@ import { IdeaMetaProvider, instanceOfPayloadLoader, instanceOfPayload } from "..
 import { networkDeployedDao } from "../utils/eth";
 import { blobifyEval } from "../utils/common";
 import { ActionableDialogue, DialogueStyle } from "../components/basic/ActionableDialogue";
+import { NotFound } from "../components/basic/NotFound";
 import { contracts, schema } from "beacon-dao";
 import { providers } from "ethers";
 
@@ -46,6 +47,17 @@ export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache): Promise<
 	// Global wrapper for the Idea contract
 	const contract = new IdeaMetaProvider(contracts.Idea__factory.connect(daoAddr, provider));
 
+	// Displays an informative error message button
+	const showError = (title: string, msg: string) => {
+		ActionableDialogue(app, {
+			title,
+			msg,
+			style: [DialogueStyle.Warning],
+			btnText: "OK",
+			onClick: () => window.location.reload(),
+		});
+	};
+
 	// Starts all of the WASM modules specified as payloads for the given idea
 	// metadata
 	const spawnWasm = async (metadata: schema.IdeaMetadata) => {
@@ -54,6 +66,7 @@ export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache): Promise<
 
 			if (payload === null) {
 				console.error("Beacon DAO: Failed to load.");
+				NotFound(app);
 
 				return;
 			}
@@ -62,6 +75,7 @@ export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache): Promise<
 			const maybeLoader = await import(/* webpackIgnore: true */ blobifyEval(payload.loader));
 			if (!instanceOfPayloadLoader(maybeLoader)) {
 				console.error("Beacon DAO: Invalid payload loader.");
+				showError("Broken Loader", "The Beacon DAO did not provide a working loader. Please try again later, or contact a DAO member.");
 
 				return;
 			}
@@ -71,6 +85,7 @@ export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache): Promise<
 			const module = await loader.default(payload.module);
 			if (!instanceOfPayload(module)) {
 				console.error("Beacon DAO: Could not load module.");
+				showError("Broken App", "An app installed by the Beacon DAO is not working. Please try again later, or contact a DAO member.");
 
 				return;
 			}
