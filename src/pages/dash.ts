@@ -26,7 +26,7 @@ export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache): Promise<
 	const { node: loader, setLoading } = ActionableDialogue(dashboard, {
 		title: "Connecting to Vision",
 		titleIconSrc: "assets/icons/loading.svg",
-		msg: "Preparing base Virtual Machine modules",
+		msg: "Preparing base Virtual Machine modules. This may take a while.",
 		style: [DialogueStyle.Secondary, DialogueStyle.Labeled],
 		btnText: "Go Faster!",
 	});

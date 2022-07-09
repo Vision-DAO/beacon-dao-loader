@@ -27,7 +27,7 @@ declare global {
 	let ipfs: IPFSCache | undefined = undefined;
 	
 	// Load an alternative HTTP-based client in testing environments only
-	if (__IPFS_NODE__) {
+	if ("__IPFS_NODE__" in window) {
 		const { create } = await import("ipfs-http-client");
 
 		gIpfs = new Promise<IPFSClient>(

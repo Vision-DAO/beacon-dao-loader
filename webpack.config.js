@@ -34,7 +34,7 @@ const prod = {
 	devtool: false,
 	output: {
 		path: paths.build,
-		publicPath: "/",
+		publicPath: "",
 		filename: "[name].[contenthash].bundle.js"
 	},
 	performance: {

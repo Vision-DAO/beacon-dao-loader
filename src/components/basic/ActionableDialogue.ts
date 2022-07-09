@@ -39,7 +39,7 @@ export const ActionableDialogue = (parent: Element = document.body, { title, tit
 	container.style.opacity = "100%";
 	container.style.transition = "0.3s";
 
-	if (DialogueStyle.Secondary in style)
+	if (style.includes(DialogueStyle.Secondary))
 		container.style.backgroundColor = "var(--main-bg-color)";
 
 	const headerContainer = container.appendChild(document.createElement("div"));
@@ -61,10 +61,10 @@ export const ActionableDialogue = (parent: Element = document.body, { title, tit
 	message.style.opacity = "0.7";
 	message.innerText = msg;
 
-	if (DialogueStyle.Warning in style)
+	if (style.includes(DialogueStyle.Warning))
 		headerImage.setAttribute("src", "assets/icons/warning.svg");
 
-	if (DialogueStyle.Labeled in style) {
+	if (style.includes(DialogueStyle.Labeled)) {
 		if (titleIconSrc)
 			headerImage.setAttribute("src", titleIconSrc);
 		else
