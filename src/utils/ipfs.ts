@@ -5,9 +5,9 @@ import { CID } from "multiformats/cid";
  * A smart contract that provides access to metadata at a CID.
  */
 export interface MetaProvider {
-	ipfsAddr(): Promise<string>,
-	address: string,
-	on(ln: () => void): void,
+	ipfsAddr(): Promise<string>;
+	address: string;
+	on(ln: () => void): void;
 }
 
 /**
@@ -33,6 +33,10 @@ export class IPFSCache {
 		this.items = {};
 		this.blobs = {};
 		this.listeners = {};
+
+		let win: Window & typeof globalThis & { ipfs: unknown } =
+			window as unknown as Window & typeof globalThis & { ipfs: unknown };
+		win.ipfs = this.ipfs;
 	}
 
 	/**
@@ -46,8 +50,7 @@ export class IPFSCache {
 		try {
 			const res = await this.ipfs.dag.get(cid);
 
-			if (res.value === null)
-				return null;
+			if (res.value === null) return null;
 
 			return res.value as T;
 		} catch (e) {
@@ -77,8 +80,7 @@ export class IPFSCache {
 	async getMeta<T>(contract: MetaProvider): Promise<T | null> {
 		const cid = CID.parse(await this.getMetaAddr(contract));
 
-		if (cid === null)
-			return null;
+		if (cid === null) return null;
 
 		return await this.get(cid);
 	}
@@ -98,13 +100,11 @@ export class IPFSCache {
 		contract.on(async () => {
 			const newAddr = CID.parse(await contract.ipfsAddr());
 
-			if (newAddr === null)
-				return;
+			if (newAddr === null) return;
 
 			const newMeta = await this.getMeta(contract);
 
-			if (newMeta === null)
-				return;
+			if (newMeta === null) return;
 
 			this.listeners[contract.address].forEach((ln) => ln(newMeta));
 		});

@@ -4,21 +4,27 @@ import { Clickable } from "./Clickable";
  * See button docs.
  */
 export interface ButtonProps {
-	label: string,
-	iconSrc?: string,
-	onClick?: () => void,
+	label: string;
+	iconSrc?: string;
+	onClick?: () => void;
 }
 
 /**
  * A component that can be sent into a loading state by calling the setLoading
  * method.
  */
-type ButtonComponent = { node: HTMLElement, setLoading: (loading: boolean) => void };
+type ButtonComponent = {
+	node: HTMLElement;
+	setLoading: (loading: boolean) => void;
+};
 
 /**
  * A component that renders a button with some text, and with an optional callback.
  */
-export const Button = (parent: Element = document.body, { label, iconSrc, onClick }: ButtonProps): ButtonComponent => {
+export const Button = (
+	parent: Element = document.body,
+	{ label, iconSrc, onClick }: ButtonProps
+): ButtonComponent => {
 	// A label, and potentially an icon, side by side
 	const container = parent.appendChild(document.createElement("div"));
 	container.classList.add("button");
@@ -40,7 +46,9 @@ export const Button = (parent: Element = document.body, { label, iconSrc, onClic
 	btn.style.transition = "0.3s opacity";
 
 	const makeLoadingIcon = (): HTMLElement => {
-		const loadingContainer = container.appendChild(document.createElement("div"));
+		const loadingContainer = container.appendChild(
+			document.createElement("div")
+		);
 		loadingContainer.style.position = "absolute";
 		loadingContainer.style.opacity = "0";
 		loadingContainer.style.transition = "0.3s opacity";
@@ -53,9 +61,11 @@ export const Button = (parent: Element = document.body, { label, iconSrc, onClic
 		loadingContainer.style.flexFlow = "row nowrap";
 		loadingContainer.style.justifyContent = "center";
 		loadingContainer.style.alignItems = "center";
-		
+
 		for (let i = 0; i < 4; i++) {
-			const ball = loadingContainer.appendChild(document.createElement("div"));
+			const ball = loadingContainer.appendChild(
+				document.createElement("div")
+			);
 			ball.style.animation = "bounce 1.5s infinite ease-in-out";
 			ball.style.animationDelay = `${0.5 * i}s`;
 			ball.style.backgroundColor = "rgba(var(--main-bg-color-rgb), 0.75)";
@@ -80,14 +90,12 @@ export const Button = (parent: Element = document.body, { label, iconSrc, onClic
 		if (!loading) {
 			btn.style.opacity = "100%";
 
-			if (loadingIcon)
-				loadingIcon.style.opacity = "0";
+			if (loadingIcon) loadingIcon.style.opacity = "0";
 			container.style.pointerEvents = "auto";
 		} else {
 			btn.style.opacity = "0";
 
-			if (loadingIcon)
-				loadingIcon.style.opacity = "100%";
+			if (loadingIcon) loadingIcon.style.opacity = "100%";
 			container.style.pointerEvents = "none";
 		}
 	};

@@ -78,7 +78,7 @@ a:hover {
 	opacity: 1;
 }
 
-.loginContainer {
+.connectContainer {
 	display: flex;
 
 	flex-flow: column nowrap;
@@ -90,7 +90,7 @@ a:hover {
 	width: 100%;
 }
 
-.loginContainer>div {
+.connectContainer>div {
 	max-width: 50%;
 }
 
@@ -123,8 +123,32 @@ a:hover {
 	color: var(--main-bg-color);
 }
 
+.hoverable {
+	transition: 0.3s opacity;
+}
+
 .hoverable:hover {
 	opacity: 80%;
+}
+
+.input {
+	border-radius: 0px;
+	outline: transparent;
+	border: transparent;
+	background-color: var(--secondary-bg-color-darker);
+	border-bottom: 1px solid var(--select);
+	color: var(--primary);
+
+	font-size: 1em;
+
+	padding: 0.5em;
+
+	transition: 0.3s opacity;
+}
+
+.input:focus {
+	opacity: 100%;
+	border-bottom: 1px solid var(--active);
 }
 
 .tab-nav-item.active {

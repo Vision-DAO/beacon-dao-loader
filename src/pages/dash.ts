@@ -1,8 +1,13 @@
 import { IPFSCache } from "../utils/ipfs";
-import { IdeaMetaProvider, instanceOfPayloadLoader, instanceOfPayload } from "../utils/idea";
+import {
+	IdeaMetaProvider,
+	instanceOfPayloadLoader,
+	instanceOfPayload,
+} from "../utils/idea";
 import { networkDeployedDao } from "../utils/eth";
 import { blobifyEval } from "../utils/common";
-import { ActionableDialogue, DialogueStyle } from "../components/basic/ActionableDialogue";
+import { ActionableDialogue } from "../components/basic/ActionableDialogue";
+import { DialogueStyle } from "../components/basic/Dialogue";
 import { NotFound } from "../components/basic/NotFound";
 import { contracts, schema } from "beacon-dao";
 import { providers } from "ethers";
@@ -11,10 +16,11 @@ import { providers } from "ethers";
  * A component that lets a user interact with a suite of DAO helpers, and then
  * log out at the end.
  */
-export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache): Promise<void> => {
-	// Wonky cast due to metamask type declaration, but this should work.
-	const provider = new providers.Web3Provider(window.ethereum as unknown as providers.ExternalProvider);
-
+export const DashboardPage = async (
+	app: HTMLElement,
+	ipfs: IPFSCache,
+	provider: providers.Provider
+): Promise<void> => {
 	// The UI must be dropped and added fully
 	const dashboard = app.appendChild(document.createElement("div"));
 	dashboard.style.height = "100%";
@@ -37,15 +43,16 @@ export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache): Promise<
 	app.classList.add("active");
 	dashboard.style.opacity = "100%";
 
-	const daoAddr = networkDeployedDao(window.ethereum);
+	const daoAddr = await networkDeployedDao(provider);
 
 	// This will never happen, because the login flow ensures that the user
 	// is on a valid network
-	if (daoAddr === null)
-		return;
+	if (daoAddr === null) return;
 
 	// Global wrapper for the Idea contract
-	const contract = new IdeaMetaProvider(contracts.Idea__factory.connect(daoAddr, provider));
+	const contract = new IdeaMetaProvider(
+		contracts.Idea__factory.connect(daoAddr, provider)
+	);
 
 	// Displays an informative error message button
 	const showError = (title: string, msg: string) => {
@@ -72,20 +79,28 @@ export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache): Promise<
 			}
 
 			// Use the loader to start the WASM module
-			const maybeLoader = await import(/* webpackIgnore: true */ blobifyEval(payload.loader));
+			const maybeLoader = await import(
+				/* webpackIgnore: true */ blobifyEval(payload.loader)
+			);
 			if (!instanceOfPayloadLoader(maybeLoader)) {
 				console.error("Beacon DAO: Invalid payload loader.");
-				showError("Broken Loader", "The Beacon DAO did not provide a working loader. Please try again later, or contact a DAO member.");
+				showError(
+					"Broken Loader",
+					"The Beacon DAO did not provide a working loader. Please try again later, or contact a DAO member."
+				);
 
 				return;
 			}
 
 			const loader: schema.PayloadLoader = maybeLoader;
 
-			const module = await loader.default(payload.module);
+			const module = await loader.default(new Uint8Array(payload.module));
 			if (!instanceOfPayload(module)) {
 				console.error("Beacon DAO: Could not load module.");
-				showError("Broken App", "An app installed by the Beacon DAO is not working. Please try again later, or contact a DAO member.");
+				showError(
+					"Broken App",
+					"An app installed by the Beacon DAO is not working. Please try again later, or contact a DAO member."
+				);
 
 				return;
 			}
@@ -102,8 +117,7 @@ export const DashboardPage = async (app: HTMLElement, ipfs: IPFSCache): Promise<
 	// Start the modules specified by the contract
 	const meta = await ipfs.getMeta<schema.IdeaMetadata>(contract);
 
-	if (meta !== null)
-		spawnWasm(meta);
+	if (meta !== null) spawnWasm(meta);
 
 	// Listen to live updates to the code specified by the Beacon DAO
 	ipfs.onMeta<schema.IdeaMetadata>(contract, spawnWasm);
