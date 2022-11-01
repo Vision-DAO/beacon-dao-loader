@@ -71,7 +71,12 @@ export const DashboardPage = async (
 		for (const cid of metadata.payload) {
 			const payload: schema.IdeaPayload | null = await ipfs.get(cid);
 
-			if (payload === null) {
+			const mod = payload ? await ipfs.getFile(payload.module) : null;
+			const modLoader = payload
+				? await ipfs.getFile(payload.loader)
+				: null;
+
+			if (payload === null || mod === null || modLoader === null) {
 				console.error("Beacon DAO: Failed to load.");
 				NotFound(app);
 
@@ -80,7 +85,9 @@ export const DashboardPage = async (
 
 			// Use the loader to start the WASM module
 			const maybeLoader = await import(
-				/* webpackIgnore: true */ blobifyEval(payload.loader)
+				/* webpackIgnore: true */ blobifyEval(
+					new TextDecoder().decode(modLoader)
+				)
 			);
 			if (!instanceOfPayloadLoader(maybeLoader)) {
 				console.error("Beacon DAO: Invalid payload loader.");
@@ -94,7 +101,7 @@ export const DashboardPage = async (
 
 			const loader: schema.PayloadLoader = maybeLoader;
 
-			const module = await loader.default(new Uint8Array(payload.module));
+			const module = await loader.default(mod);
 			if (!instanceOfPayload(module)) {
 				console.error("Beacon DAO: Could not load module.");
 				showError(

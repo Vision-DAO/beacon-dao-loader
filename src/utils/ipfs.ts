@@ -52,7 +52,33 @@ export class IPFSCache {
 
 			if (res.value === null) return null;
 
+			this.items[cid.toString()] = res.value;
 			return res.value as T;
+		} catch (e) {
+			console.error(e);
+
+			return null;
+		}
+	}
+
+	/**
+	 * Gets the binary data in the IPFS file stored at the given CID.
+	 */
+	async getFile(cid: CID): Promise<Uint8Array | null> {
+		if (cid.toString() in this.items)
+			return this.items[cid.toString()] as Uint8Array;
+
+		try {
+			let buff = new Uint8Array();
+
+			for await (const chunk of this.ipfs.cat(cid)) {
+				const sink = new Uint8Array(buff.length + chunk.length);
+				sink.set(buff);
+				sink.set(chunk, buff.length);
+			}
+
+			this.items[cid.toString()] = buff;
+			return buff;
 		} catch (e) {
 			console.error(e);
 
