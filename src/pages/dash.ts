@@ -56,7 +56,12 @@ export const DashboardPage = async (
 
 	// Displays an informative error message button
 	const showError = (title: string, msg: string) => {
-		ActionableDialogue(app, {
+		// Remove loading indicator now that initial load is done
+		setLoading(false);
+		loader.style.opacity = "0%";
+		setTimeout(() => dashboard.removeChild(loader), 300);
+
+		ActionableDialogue(dashboard, {
 			title,
 			msg,
 			style: [DialogueStyle.Warning],
@@ -71,14 +76,21 @@ export const DashboardPage = async (
 		for (const cid of metadata.payload) {
 			const payload: schema.IdeaPayload | null = await ipfs.get(cid);
 
-			const mod = payload ? await ipfs.getFile(payload.module) : null;
-			const modLoader = payload
-				? await ipfs.getFile(payload.loader)
+			const mod = payload
+				? await ipfs.getFile(payload.module.toString())
+				: null;
+			const modLoaderSrc = payload
+				? await ipfs.getFile(payload.loader.toString())
 				: null;
 
-			if (payload === null || mod === null || modLoader === null) {
+			if (payload === null || mod === null || modLoaderSrc === null) {
 				console.error("Beacon DAO: Failed to load.");
 				NotFound(app);
+
+				// Remove loading indicator now that initial load is done
+				setLoading(false);
+				loader.style.opacity = "0%";
+				setTimeout(() => dashboard.removeChild(loader), 300);
 
 				return;
 			}
@@ -86,7 +98,7 @@ export const DashboardPage = async (
 			// Use the loader to start the WASM module
 			const maybeLoader = await import(
 				/* webpackIgnore: true */ blobifyEval(
-					new TextDecoder().decode(modLoader)
+					new TextDecoder().decode(modLoaderSrc)
 				)
 			);
 			if (!instanceOfPayloadLoader(maybeLoader)) {
@@ -99,9 +111,9 @@ export const DashboardPage = async (
 				return;
 			}
 
-			const loader: schema.PayloadLoader = maybeLoader;
+			const modLoader: schema.PayloadLoader = maybeLoader;
 
-			const module = await loader.default(mod);
+			const module = await modLoader.default(mod);
 			if (!instanceOfPayload(module)) {
 				console.error("Beacon DAO: Could not load module.");
 				showError(

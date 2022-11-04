@@ -69,7 +69,7 @@ const dev = {
 		hot: true,
 		port: 3000,
 		proxy: {
-			"/api": "http://localhost:5002"
+			"/api": "http://localhost:5001"
 		}
 	},
 

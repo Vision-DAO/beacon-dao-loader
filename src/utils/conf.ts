@@ -29,7 +29,7 @@ export const EXPLORER_URLS: { [chainId: number]: string } = {
  * Addresses of Ethereum Beacon DAO's deployed on different chains.
  */
 export const DEPLOYED_CONTRACTS: { [chainId: number]: string } = {
-	80001: "0xdffa74b4987601a2f5d89e807956c2d50b0c527f",
+	80001: "0x0450aea6c1496cae3d1bc2a596a3dece3b681a03",
 };
 
 /**

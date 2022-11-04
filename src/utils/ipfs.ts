@@ -64,7 +64,7 @@ export class IPFSCache {
 	/**
 	 * Gets the binary data in the IPFS file stored at the given CID.
 	 */
-	async getFile(cid: CID): Promise<Uint8Array | null> {
+	async getFile(cid: string): Promise<Uint8Array | null> {
 		if (cid.toString() in this.items)
 			return this.items[cid.toString()] as Uint8Array;
 
@@ -75,6 +75,8 @@ export class IPFSCache {
 				const sink = new Uint8Array(buff.length + chunk.length);
 				sink.set(buff);
 				sink.set(chunk, buff.length);
+
+				buff = sink;
 			}
 
 			this.items[cid.toString()] = buff;
@@ -105,6 +107,9 @@ export class IPFSCache {
 	 */
 	async getMeta<T>(contract: MetaProvider): Promise<T | null> {
 		const cid = CID.parse(await this.getMetaAddr(contract));
+
+		console.log(cid);
+		console.log(await this.get(cid));
 
 		if (cid === null) return null;
 
