@@ -108,9 +108,6 @@ export class IPFSCache {
 	async getMeta<T>(contract: MetaProvider): Promise<T | null> {
 		const cid = CID.parse(await this.getMetaAddr(contract));
 
-		console.log(cid);
-		console.log(await this.get(cid));
-
 		if (cid === null) return null;
 
 		return await this.get(cid);
