@@ -40,7 +40,7 @@ export const openAddress = (eth: MetaMaskInpageProvider, address: string) => {
 };
 
 /**
- * Connects the user to the polygon mumbai testnet.
+ * Connects the user to the Arbitrum testnet.
  *
  * Returns false if an error occurred.
  */

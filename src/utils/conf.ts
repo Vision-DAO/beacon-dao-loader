@@ -12,6 +12,11 @@ export const APP_VERSION = __APP_VERSION__;
 export const IPFS_GATEWAY = __IPFS_GATEWAY__;
 
 /**
+ * Miliseconds between calls to runtime poll()
+ */
+export const RT_LATENCY = 1;
+
+/**
  * Human-readable equivalents for supported networks.
  */
 export const NETWORK_NAMES: { [chainId: number]: string } = {
@@ -29,7 +34,7 @@ export const EXPLORER_URLS: { [chainId: number]: string } = {
  * Addresses of Ethereum Beacon DAO's deployed on different chains.
  */
 export const DEPLOYED_CONTRACTS: { [chainId: number]: string } = {
-	80001: "0xee7eeafec6fe22515ae3d62af65a814f5dc8f124",
+	421613: "0x91de242e2cce6fa76ba97641ad7e13230f2eb7b4",
 };
 
 /**
@@ -37,9 +42,9 @@ export const DEPLOYED_CONTRACTS: { [chainId: number]: string } = {
  * current network isn't supported.
  */
 export const DEFAULT_NETWORK = {
-	chainId: "0x13881",
-	chainName: "Polygon Testnet",
-	nativeCurrency: { name: "Polygon", symbol: "MATIC", decimals: 18 },
-	rpcUrls: ["https://matic-mumbai.chainstacklabs.com"],
-	blockExplorerUrls: ["https://mumbai.polygonscan.com"],
+	chainId: "421613",
+	chainName: "Arbitrum Testnet",
+	nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
+	rpcUrls: ["https://goerli-rollup.arbitrum.io/rpc"],
+	blockExplorerUrls: ["https://goerli.arbiscan.io/"],
 };

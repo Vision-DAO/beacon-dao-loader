@@ -6,6 +6,7 @@ import {
 } from "../utils/idea";
 import { networkDeployedDao } from "../utils/eth";
 import { blobifyEval } from "../utils/common";
+import { RT_LATENCY } from "../utils/conf";
 import { ActionableDialogue } from "../components/basic/ActionableDialogue";
 import { DialogueStyle } from "../components/basic/Dialogue";
 import { NotFound } from "../components/basic/NotFound";
@@ -125,6 +126,8 @@ export const DashboardPage = async (
 			}
 
 			module.start();
+
+			if (module.poll !== undefined) setInterval(module.poll, RT_LATENCY);
 		}
 
 		// Remove loading indicator now that initial load is done

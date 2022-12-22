@@ -45,7 +45,7 @@ export const ConnectPage = async (
 			titleIconSrc: "assets/icons/wifi.svg",
 			msg:
 				statusMsg ||
-				"A connection to the Polygon blockchain will be attempted before you can proceed.",
+				"A connection to the Arbitrum blockchain will be attempted before you can proceed.",
 			style: [DialogueStyle.Labeled],
 		});
 
@@ -117,7 +117,7 @@ export const ConnectPage = async (
 	}
 
 	// Show a prompt telling the user that IPFS is being loaded until it is ready
-	const { node, setLoading } = ActionableDialogue(connectContainer, {
+	const { setLoading } = ActionableDialogue(connectContainer, {
 		title: "Connecting to the IPFS Network",
 		msg: "The client is currently connecting to the IPFS network. Please wait.",
 		btnText: "Go Faster",
@@ -127,7 +127,6 @@ export const ConnectPage = async (
 	setLoading(true);
 
 	const ipfs = await eventualIpfs;
-	connectContainer.removeChild(node);
 
 	app.removeChild(connectContainer);
 

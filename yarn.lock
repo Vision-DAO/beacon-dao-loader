@@ -3045,9 +3045,9 @@ __metadata:
   linkType: hard
 
 "@openzeppelin/contracts@npm:^4.6.0":
-  version: 4.7.3
-  resolution: "@openzeppelin/contracts@npm:4.7.3"
-  checksum: 18382fcacf7cfd652f5dd0e70c08f08ea74eaa8ff11e9f9850639ada70198ae01a3f9493d89a52d724f2db394e9616bf6258017804612ba273167cf657fbb073
+  version: 4.8.0
+  resolution: "@openzeppelin/contracts@npm:4.8.0"
+  checksum: dfab51a7f91735cfb1e94dd5074736b0dac0207e4ebf26eb46b32defd3b67adce5a36b248daa7b841c21be74863c1e37cf92ed194a9c36d3f8c5326d1a24242a
   languageName: node
   linkType: hard
 
@@ -4726,12 +4726,12 @@ __metadata:
 
 "beacon-dao@git@github.com:Vision-DAO/beacon-dao.git#master":
   version: 0.1.0
-  resolution: "beacon-dao@git@github.com:Vision-DAO/beacon-dao.git#commit=9ff8d8435075a10bbf13e6fa86b4befe7af55ddf"
+  resolution: "beacon-dao@git@github.com:Vision-DAO/beacon-dao.git#commit=508c40eec32a09c0bc3affcb0544dcf26967c38f"
   dependencies:
     "@openzeppelin/contracts": ^4.6.0
     ethers: ^5.6.9
     ipld-schema-validator: "https://github.com/Vision-DAO/js-ipld-schema-validator"
-  checksum: 19f36afb0499f895e7e7d393bbf9377c33afca7eb6de6025ddeac3ddfb615c72e3ad67ee1cdd022e0303b9f6a1d3f23608c6bffbc2830e388fb5c2e15c67e397
+  checksum: 9acb84efa406d7d4d043b22301c0fd8e01432355837887d6b289422a3c8f835fd359f0a853bc6c6caf06816ec5a1060cd620695115b1c9f391cdcff227d3c51d
   languageName: node
   linkType: hard
 
@@ -14559,6 +14559,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"yargs-parser@npm:^21.1.1":
+  version: 21.1.1
+  resolution: "yargs-parser@npm:21.1.1"
+  checksum: ed2d96a616a9e3e1cc7d204c62ecc61f7aaab633dcbfab2c6df50f7f87b393993fe6640d017759fe112d0cb1e0119f2b4150a87305cc873fd90831c6a58ccf1c
+  languageName: node
+  linkType: hard
+
 "yargs@npm:^16.2.0":
   version: 16.2.0
   resolution: "yargs@npm:16.2.0"
@@ -14575,8 +14582,8 @@ __metadata:
   linkType: hard
 
 "yargs@npm:^17.0.1":
-  version: 17.6.0
-  resolution: "yargs@npm:17.6.0"
+  version: 17.6.2
+  resolution: "yargs@npm:17.6.2"
   dependencies:
     cliui: ^8.0.1
     escalade: ^3.1.1
@@ -14584,8 +14591,8 @@ __metadata:
     require-directory: ^2.1.1
     string-width: ^4.2.3
     y18n: ^5.0.5
-    yargs-parser: ^21.0.0
-  checksum: 604bdb4a6395a870540d2f3fea083c8e28441f12da8fd05b172b1e68480f00ed73d76be4a05fac19de9bf55ec7729b41e81cf555cccaed700aa192e4fff64872
+    yargs-parser: ^21.1.1
+  checksum: 47da1b0d854fa16d45a3ded57b716b013b2179022352a5f7467409da5a04a1eef5b3b3d97a2dfc13e8bbe5f2ffc0afe3bc6a4a72f8254e60f5a4bd7947138643
   languageName: node
   linkType: hard
 
