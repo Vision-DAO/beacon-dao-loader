@@ -4726,12 +4726,12 @@ __metadata:
 
 "beacon-dao@git@github.com:Vision-DAO/beacon-dao.git#master":
   version: 0.1.0
-  resolution: "beacon-dao@git@github.com:Vision-DAO/beacon-dao.git#commit=508c40eec32a09c0bc3affcb0544dcf26967c38f"
+  resolution: "beacon-dao@git@github.com:Vision-DAO/beacon-dao.git#commit=91f5411eae8538f71ff570322e183553615e51f1"
   dependencies:
     "@openzeppelin/contracts": ^4.6.0
     ethers: ^5.6.9
     ipld-schema-validator: "https://github.com/Vision-DAO/js-ipld-schema-validator"
-  checksum: 9acb84efa406d7d4d043b22301c0fd8e01432355837887d6b289422a3c8f835fd359f0a853bc6c6caf06816ec5a1060cd620695115b1c9f391cdcff227d3c51d
+  checksum: 500d7cc740d71f917958fa47a8d9262703bd8e6b39657ee36865942f17f97df0d5a0bd184bdfcd0f86e43237d6664e8215f1428325a1b20e6df7db76eeae4ce7
   languageName: node
   linkType: hard
 
