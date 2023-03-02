@@ -10,7 +10,7 @@
 	"private": true,
 	"scripts": {
 		"build": "node --experimental-json-modules ./node_modules/.bin/webpack --env=production",
-		"dev": "ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '[\"http://localhost:3000\", \"http://127.0.0.1:5001\"]' && ipfs daemon & node --experimental-json-modules ./node_modules/.bin/webpack serve --mode=development"
+		"dev": "node --experimental-json-modules ./node_modules/.bin/webpack serve --mode=development"
 	},
 	"dependencies": {
 		"@achingbrain/webrtc-direct": "^0.7.2",

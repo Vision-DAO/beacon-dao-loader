@@ -99,8 +99,8 @@ export const ConnectPage = async (
 
 					try {
 						if (rpc === "auto")
-							provider = getDefaultProvider(
-								DEFAULT_NETWORK.chainId
+							provider = new providers.JsonRpcProvider(
+								DEFAULT_NETWORK.rpcUrls[0]
 							);
 						else provider = new providers.JsonRpcProvider(rpc);
 					} catch (e) {

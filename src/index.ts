@@ -8,11 +8,6 @@ import { DashboardPage } from "./pages/dash";
 import "./styles/index.css";
 
 /**
- * Used for testing with one single IPFS node per-run.
- */
-declare const __IPFS_NODE__: undefined | string;
-
-/**
  * Satisfy typescript wanting typings for the window.ethereum instance.
  */
 declare global {
@@ -27,23 +22,15 @@ declare global {
 	let ipfs: IPFSCache | undefined = undefined;
 
 	// Load an alternative HTTP-based client in testing environments only
-	if (__IPFS_NODE__ !== undefined) {
-		const { create } = await import("ipfs-http-client");
-
-		gIpfs = new Promise<IPFSClient>((resolve) =>
-			resolve(create({ url: __IPFS_NODE__ }) as unknown as IPFSClient)
-		);
-	} else {
-		// Run IPFS in a web worker to prevent main from blocking. This reduces
-		// load times, because IPFS can do its thing in the background, and we can
-		// check if it's done later.
-		const worker = new SharedWorker(
-			new URL("./utils/ipfs.worker.ts", import.meta.url)
-		);
-		gIpfs = new Promise<IPFSClient>((resolve) => {
-			resolve(IPFSClient.from(worker.port));
-		});
-	}
+	// Run IPFS in a web worker to prevent main from blocking. This reduces
+	// load times, because IPFS can do its thing in the background, and we can
+	// check if it's done later.
+	const worker = new SharedWorker(
+		new URL("./utils/ipfs.worker.ts", import.meta.url)
+	);
+	gIpfs = new Promise<IPFSClient>((resolve) => {
+		resolve(IPFSClient.from(worker.port));
+	});
 
 	// Use one global address for the user's logged in account
 	const app = document.querySelector(".app") as HTMLElement;
