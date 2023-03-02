@@ -131,6 +131,7 @@ const common = {
 			__APP_VERSION__: JSON.stringify(pkg.version.replaceAll("^", "")),
 			__IPFS_VERSION__: JSON.stringify(pkg.dependencies.ipfs.replaceAll("^", "")),
 			__IPFS_GATEWAY__: JSON.stringify(process.env.IPFS_GATEWAY || "https://cloudflare-ipfs.com"),
+			__ARB_DEPLOYED__: JSON.stringify(process.env.ARB_DEPLOYED || ""),
 		}),
 	],
 
